@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     const progressIcon = document.getElementById("progress-icon"); // 获取 GIF 动图
     let currentQuestionIndex = 0;
     const totalQuestions = 5; 
+    
 
     // 预加载音效
     const correctSound = new Audio("sounds/correct.mp3");
@@ -79,6 +80,9 @@ document.addEventListener("DOMContentLoaded", async function() {
         // 让 GIF 动图同步移动
         progressIcon.style.transition = "left 0.5s ease-in-out";
         progressIcon.style.left = `${progress}%`;
+        // grass
+        let grassOverlay = document.getElementById("grass-overlay");
+        grassOverlay.style.width = `${progress}%`;
 
         progressBar.addEventListener("transitionend", function handleTransition() {
             progressBar.removeEventListener("transitionend", handleTransition);

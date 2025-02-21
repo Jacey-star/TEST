@@ -9,7 +9,7 @@ body {
     align-items: center;
 }
 .quiz-container {
-    background: #64dfdf;
+    background: #9dd5ff;
     padding: 20px;
     width: 80%;
     max-width: 600px;
@@ -27,7 +27,7 @@ h2 {
     gap: 10px;
 }
 .option {
-    background: #33506e;
+    background: #334e6e;
     color: white;
     font-size: 18px;
     padding: 10px;
@@ -47,8 +47,6 @@ h2 {
 }
 
 /* 进度条 */
-/* 让进度条固定在页面最底部 */
-/* 进度条 */
 .progress {
     width: 90%;
     max-width: 600px;
@@ -57,26 +55,6 @@ h2 {
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-}
-
-/* 进度条外框 */
-.progress-bar {
-    width: 100%;
-    height: 14px; /* 进度条高度 */
-    background: #ddd;
-    border-radius: 3px;
-    overflow: visible; /* 确保 GIF 不被隐藏 */
-    position: relative;
-}
-
-/* 进度条填充 */
-.progress-per {
-    width: 0%;
-    height: 14px;
-    background: #33506e;
-    border-radius: 3px;
-    position: relative;
-    transition: width 0.5s ease-in-out;
 }
 
 /* 进度条上的 GIF 动图 */
@@ -91,39 +69,39 @@ h2 {
     display: block;
 }
 
-
-
-/* 进度条上的百分比指示 */
-.progress-per::before {
-    content: attr(per);
-    position: absolute;
-    padding: 4px 6px;
-    background: #860d0d;
-    border-radius: 4px;
-    font-size: 12px;
-    top: -35px;
-    right: 0;
-    transform: translateX(50%);
-    color: white;
-    opacity: 0; /* 初始时隐藏进度百分比 */
-    transition: opacity 0.3s ease-in-out;
+/* 进度条外框 */
+.progress-bar {
+    width: 100%;
+    height: 14px; /* 进度条高度 */
+    background: #b37d48;
+    border-radius: 3px;
+    overflow: visible; /* 确保 GIF 不被隐藏 */
+    position: relative;
 }
 
-/* 进度条上的小箭头 */
-.progress-per::after {
-    content: "";
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: #64dfdf;
-    top: -20px;
-    right: 0;
-    transform: translateX(50%) rotate(45deg);
-    border-radius: 2px;
-    opacity: 0; /* 初始时隐藏小箭头 */
-    transition: opacity 0.3s ease-in-out;
+/* 进度条填充 */
+.progress-per {
+    width: 0%;
+    height: 14px;
+    background: #45bc4b;
+    border-radius: 3px;
+    position: relative;
+    transition: width 0.5s ease-in-out;
 }
 
+
+/* grass */
+.grass-overlay {
+    position: absolute;
+    top: -65px;  /* 让草略微高于进度条 */
+    left: 0;
+    height: 120px;
+    width: 0%; /* 初始时宽度为0，随着进度增长 */
+    background: url('../pictures/grass.gif') repeat-x; /* 这里替换为你的草动图地址 */
+    background-size: contain;
+    
+    transition: width 0.5s ease-in-out;
+}
 
 /* 进度条填充动画 */
 @keyframes fillBars {
