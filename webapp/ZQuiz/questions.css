@@ -1,0 +1,137 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0fce1;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.quiz-container {
+    background: #64dfdf;
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    min-width: 300px; 
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(200px);
+}
+h2 {
+    margin-bottom: 10px;
+}
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.option {
+    background: #33506e;
+    color: white;
+    font-size: 18px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.correct {
+    background-color: #4CAF50 !important;
+}
+
+.wrong {
+    background-color: #860d0d !important;
+}
+
+/* 进度条 */
+/* 让进度条固定在页面最底部 */
+/* 进度条 */
+.progress {
+    width: 90%;
+    max-width: 600px;
+    padding: 0 20px;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 进度条外框 */
+.progress-bar {
+    width: 100%;
+    height: 14px; /* 进度条高度 */
+    background: #ddd;
+    border-radius: 3px;
+    overflow: visible; /* 确保 GIF 不被隐藏 */
+    position: relative;
+}
+
+/* 进度条填充 */
+.progress-per {
+    width: 0%;
+    height: 14px;
+    background: #33506e;
+    border-radius: 3px;
+    position: relative;
+    transition: width 0.5s ease-in-out;
+}
+
+/* 进度条上的 GIF 动图 */
+.progress-icon {
+    width: 50px; /* 控制 GIF 大小 */
+    height: auto;
+    position: absolute;
+    bottom: 100%; /* 让 GIF 的底部对齐进度条顶部 */
+    left: 0%; /* 初始位置 */
+    transform: translateX(-50%);
+    transition: left 0.5s ease-in-out; /* 让 GIF 平滑移动 */
+    display: block;
+}
+
+
+
+/* 进度条上的百分比指示 */
+.progress-per::before {
+    content: attr(per);
+    position: absolute;
+    padding: 4px 6px;
+    background: #860d0d;
+    border-radius: 4px;
+    font-size: 12px;
+    top: -35px;
+    right: 0;
+    transform: translateX(50%);
+    color: white;
+    opacity: 0; /* 初始时隐藏进度百分比 */
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* 进度条上的小箭头 */
+.progress-per::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #64dfdf;
+    top: -20px;
+    right: 0;
+    transform: translateX(50%) rotate(45deg);
+    border-radius: 2px;
+    opacity: 0; /* 初始时隐藏小箭头 */
+    transition: opacity 0.3s ease-in-out;
+}
+
+
+/* 进度条填充动画 */
+@keyframes fillBars {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+

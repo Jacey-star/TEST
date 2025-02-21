@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>navpage</title>
+    <link rel="stylesheet" href="navpage2.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!--1. profile-->
+        <div class="item active" style="background-image: url(../pictures/earth2.jpg);">
+            <div class="shadow"></div>
+            <div class="content">
+                <div class="icon">
+                    <i class="fa fa-id-card" aria-hidden="true"></i>
+                </div>
+                <div class="text">
+                    <div class="title">Profile</div>
+                </div>
+            </div>
+            <!--click avatar to enter the profile page-->
+            <a href="../profilepage/profile.html" class="avatar-link">
+                <div class="avatar-frame">
+                    <img src="../pictures/turtle.jpg" alt="Avatar">
+                </div>
+            </a>
+            <!-- leaderboard and score -->
+            <a href="../leaderboard/leaderboard.html" class="user-info-link">
+                <div class="user-info-box">
+                    <p>SCORE: <span id="user-score">loading...</span></p>
+                    <p>RANK: <span id="user-rank">loading...</span></p><br>
+                    <p>*Click to view the leaderboard.</span></p>
+                </div>
+            </a>
+        </div>
+        <!--2. quiz-->
+        <div class="item" style="background-image: url(../pictures/light2.jpg);">
+            <div class="shadow"></div>
+            <div class="content">
+                <div class="icon">
+                    <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                </div>
+                <div class="text">
+                    <div class="title">Sustainability Quiz
+                        <i class="fa fa-question-circle info-icon" onclick="openModal('quiz-modal')" aria-hidden="true"></i>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- Action key -->
+            <a href="../ZQuiz/quiz.html" class="action-button">
+                <div class="button-icon">
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </div>
+            </a >
+        </div>
+        
+        <!--3. Recycling Master-->
+        <div class="item" style="background-image: url(../pictures/can.jpg);">
+            <div class="shadow"></div>
+            <div class="content">
+                <div class="icon">
+                    <i class="fa fa-envira" aria-hidden="true"></i>
+                </div>
+                <div class="text">
+                    <div class="title">Recycling Master
+                        <i class="fa fa-question-circle info-icon" onclick="openModal('recycling-modal')" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+            <a href="../ZRecyclingMaster/recycling.html" class="action-button">
+                <div class="button-icon">
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </div>
+            </a >
+        </div>
+        <!--4. Green Travel Expert-->
+        <div class="item" style="background-image: url(../pictures/run3.jpg);">
+            <div class="shadow"></div>
+            <div class="content">
+                <div class="icon">
+                    <i class="fa fa-map-signs" aria-hidden="true"></i>
+                </div>
+                <div class="text">
+                    <div class="title">Green Travel Expert
+                        <i class="fa fa-question-circle info-icon" onclick="openModal('travel-modal')" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+            <a href="../ZGreenTravel/travel.html" class="action-button">
+                <div class="button-icon">
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </div>
+            </a >
+        </div>
+        <!-- Popup -->
+        <div id="quiz-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('quiz-modal')">&times;</span>
+                <h2>Substainability Quiz</h2><br>
+                <h3>Content: </h3>
+                <p>Take the environmental knowledge quiz, answer 5 questions correctly and get a reward.</p><br>
+                <h3>Goal: </h3>
+                <p>Through interactive Q&A, let users learn environmental protection knowledge.</p><br>
+                <h3>Method: </h3>
+                <p>After the user clicks "Start quiz", the system randomly selects 5 questions related to environmental protection, and after the user completes the test, all pairs can be rewarded.</p><br>
+                <h3>Rewards: </h3>
+                <p>Answer 5 questions correctly and get 25points.</p>
+            </div>
+        </div>
+        <div id="recycling-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('recycling-modal')">&times;</span>
+                <h2>Recycling Master</h2><br>
+                <h3>Content: </h3>
+                <p>Recycle at least 5 plastic bottles on campus and sign in at designated recycling stations. </p><br>
+                <h3>Goal: </h3>
+                <p>Guide users to get used to garbage classification and improve recycling awareness. </p><br>
+                <h3>Method: </h3>
+                <p>Users will take the recycling to the designated recycling point on campus, and scan the QR code to sign in. </p><br>
+                <h3>Rewards: </h3>
+                <p>Get 10 points for completing tasks. Tasks are repeatable and can be completed up to once per day. </p>
+            </div>
+        </div>
+        <div id="travel-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('travel-modal')">&times;</span>
+                <h2>Green Travel Expert</h2><br>
+                <h3>Content: </h3>
+                <p>Walk at least 3 km on campus and use GPS to sign in. </p><br>
+                <h3>Goal: </h3>
+                <p>Encourage users to reduce carbon emissions and raise awareness of sustainable mobility. </p><br>
+                <h3>Method: </h3>
+                <p>Users use mobile GPS to record the walking distance, and the system automatically verifies when they reach 3 kilometers. </p><br>
+                <h3>Rewards: </h3>
+                <p>Complete the mission and earn 30 points.</p>
+                    
+            </div>
+        </div>
+
+    </div>
+    <script src="navpage2.js"></script>
+</body>

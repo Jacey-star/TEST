@@ -1,0 +1,156 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+/*hole page*/
+html, .login-page {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+/*sign page background*/
+.login-page {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    height: 100vh;
+    background-image: url("../pictures/raccoon2.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center; /* 确保背景图片显示中间部分 */
+    background-attachment: fixed;
+}
+/*hole sign page*/
+.login-page .container{
+    width: 350px;
+    height: 550px;
+    background-color: rgba(237, 237, 237, 0.688);
+
+    margin: 10% auto;
+    color: rgb(0, 60, 6);
+    border-radius: 15px;
+    padding: 60px;
+    transition: .5s;
+}
+/*every box in sign page*/
+.container .form-group .form-control{
+    border-radius: 5px;
+    background: transparent;
+    border-color: rgba(79, 79, 79, 0.062);
+    padding: 5px;
+    width: 100%;
+}
+/* signin & signup button(big) */
+.container .form-group .sign-btn{
+    border: 0;
+    font-size: 20px;
+    background-image: linear-gradient(100deg,rgb(104, 170, 178),rgb(121, 176, 98),rgb(178, 204, 134));
+}
+/*signup button(small) --- index.html*/
+.container .sign-up .signup-btn{
+    background: transparent;
+    border-color: rgba(247, 241, 241, 0.055);
+    text-decoration: underline;
+    font-size: 15px;
+}
+/*signin button(small) --- signup.html*/
+.container .sign-in .signin-btn{
+    background: transparent;
+    border-color: rgba(247, 241, 241, 0.055);
+    text-decoration: underline;
+    font-size: 15px;
+}
+/**/
+
+/* 按钮容器样式 */
+.button-container {
+    position: relative;
+    width: 100%;
+}
+
+/* 加载文字样式 */
+.loading-text {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(0, 60, 6);
+    font-size: 16px;
+    animation: bounce 1s infinite;
+}
+
+/* 弹窗背景 */
+.success-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* 弹窗内容 */
+.modal-content {
+    background-color: rgba(237, 237, 237, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    color: rgb(0, 60, 6);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    min-width: 300px;
+}
+
+/* Loading动画 */
+.modal-loading h2 {
+    color: rgb(0, 60, 6);
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { 
+        transform: translateY(0); 
+    }
+    50% { 
+        transform: translateY(-10px); 
+    }
+}
+
+/* 成功状态样式 */
+.modal-success h2 {
+    margin-bottom: 20px;
+    color: rgb(0, 60, 6);
+}
+
+/* 弹窗按钮 */
+.modal-btn {
+    margin-top: 20px;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 5px;
+    background-image: linear-gradient(100deg,rgb(104, 170, 178),rgb(121, 176, 98),rgb(178, 204, 134));
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.modal-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Error message */
+.error-message {
+    color: red;
+    text-align: center;
+    margin: 10px 0;
+}

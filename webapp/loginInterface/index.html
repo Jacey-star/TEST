@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome!</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body class="login-page">
+    <div class="container">
+        <h1>
+            Sign in
+        </h1>
+        <h3>
+            Use your username<br><br>
+        </h3>
+        <div class="data">
+            <form action="#">
+                <!-- error message display -->
+                <div class="error-message" style="display: none;"></div>
+                
+                <div class="form-group">
+                    <input type="text" name="username" class="form-control" placeholder="Username" required><br><br>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" name="password" class="form-control" placeholder="Password" required><br><br>
+                </div>
+
+                <!-- Loading animation -->
+                <div class="loading" style="display: none;">Loading...</div>
+
+                <div class="form-group">
+                    <input type="checkbox" name="remember">
+                    <span class="chk-box">
+                        Remember me<br><br>
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" class="form-control sign-btn" value="Sign in"><br><br>
+                </div>
+
+                <div class="sign-up">
+                    <span>Don't have an account?</span>
+                    <input type="button" class="signup-btn" value="Sign up" onclick="window.location.href='./signup.html';">
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="./script.js"></script>
+</body>
+</html>

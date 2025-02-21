@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="questions.css">
+    <script defer src="questions.js"></script>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h2 id="question-number">Question 1</h2>
+        <p id="question-text">Loading...</p>
+
+        <div class="options">
+            <button class="option" data-option="A">A. <span></span></button>
+            <button class="option" data-option="B">B. <span></span></button>
+            <button class="option" data-option="C">C. <span></span></button>
+            <button class="option" data-option="D">D. <span></span></button>
+        </div>
+    </div>
+
+    <!-- 进度条 -->
+     <div class="progress">
+        <div class="progress-bar">
+            <div class="progress-per" per="0%" style="max-width: 100%;"></div>
+            <img src="../pictures/turkey.gif" class="progress-icon" id="progress-icon">
+        </div>
+     </div>
+
+</body>
+</html>
