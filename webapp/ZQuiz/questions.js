@@ -3,12 +3,12 @@ document.addEventListener("DOMContentLoaded", async function() {
     const questionNumber = document.getElementById("question-number");
     const options = document.querySelectorAll(".option");
     const progressBar = document.querySelector(".progress-per");
-    const progressIcon = document.getElementById("progress-icon"); // 获取 GIF 动图
+    const progressIcon = document.getElementById("progress-icon"); 
     let currentQuestionIndex = 0;
     const totalQuestions = 5; 
     
 
-    // 预加载音效
+    // preload sounds effects
     const correctSound = new Audio("sounds/correct.mp3");
     const wrongSound = new Audio("sounds/wrong.mp3");
 
@@ -71,19 +71,22 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 
     function updateProgress(callback) {
-        let progress = ((currentQuestionIndex + 1) / totalQuestions) * 100; // 计算进度
-
-        progressBar.style.transition = "width 0.5s ease-in-out";
+        let progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+        const animationDuration = "1s";
+        
+        // progress bar animation
+        progressBar.style.transition = `width ${animationDuration} ease-in-out`;
         progressBar.style.width = `${progress}%`;
-        progressBar.setAttribute("per", `${Math.round(progress)}%`);
-
-        // 让 GIF 动图同步移动
-        progressIcon.style.transition = "left 0.5s ease-in-out";
+        
+        // turkry animation
+        progressIcon.style.transition = `left ${animationDuration} ease-in-out`;
         progressIcon.style.left = `${progress}%`;
-        // grass
+        
+        // grass animation
         let grassOverlay = document.getElementById("grass-overlay");
-        grassOverlay.style.width = `${progress}%`;
-
+        grassOverlay.style.transition = `width ${animationDuration} ease-in-out`;
+        grassOverlay.style.width = `${(currentQuestionIndex + 1) * 20}%`;
+    
         progressBar.addEventListener("transitionend", function handleTransition() {
             progressBar.removeEventListener("transitionend", handleTransition);
             callback();

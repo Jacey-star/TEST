@@ -46,7 +46,7 @@ h2 {
     background-color: #860d0d !important;
 }
 
-/* 进度条 */
+/* progress bar */
 .progress {
     width: 90%;
     max-width: 600px;
@@ -57,29 +57,29 @@ h2 {
     transform: translateX(-50%);
 }
 
-/* 进度条上的 GIF 动图 */
+/* GIF over bar */
 .progress-icon {
-    width: 50px; /* 控制 GIF 大小 */
+    width: 50px; /* control GIF size */
     height: auto;
     position: absolute;
-    bottom: 100%; /* 让 GIF 的底部对齐进度条顶部 */
-    left: 0%; /* 初始位置 */
+    bottom: 100%; /* 对齐 */
+    left: 0%; /* Innitial position */
     transform: translateX(-50%);
-    transition: left 0.5s ease-in-out; /* 让 GIF 平滑移动 */
+    transition: left 0.5s ease-in-out; 
     display: block;
 }
 
-/* 进度条外框 */
+/* progress bar(ground) */
 .progress-bar {
     width: 100%;
-    height: 14px; /* 进度条高度 */
+    height: 14px; 
     background: #b37d48;
     border-radius: 3px;
-    overflow: visible; /* 确保 GIF 不被隐藏 */
+    overflow: visible; 
     position: relative;
 }
 
-/* 进度条填充 */
+/* porgress var (grass) */
 .progress-per {
     width: 0%;
     height: 14px;
@@ -93,17 +93,18 @@ h2 {
 /* grass */
 .grass-overlay {
     position: absolute;
-    top: -65px;  /* 让草略微高于进度条 */
+    top: -65px;  
     left: 0;
     height: 120px;
-    width: 0%; /* 初始时宽度为0，随着进度增长 */
-    background: url('../pictures/grass.gif') repeat-x; /* 这里替换为你的草动图地址 */
-    background-size: contain;
-    
-    transition: width 0.5s ease-in-out;
+    width: 0%; /* Initial width 0 */
+    background: url('../pictures/grass.gif') repeat-x; 
+    background-position: left bottom;
+    background-size: auto 100%;
+    transform-origin: left bottom;
+    overflow: hidden;
+ 
 }
-
-/* 进度条填充动画 */
+/* progress var fill animation */
 @keyframes fillBars {
     from {
         width: 0;
