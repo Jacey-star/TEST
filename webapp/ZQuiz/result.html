@@ -3,10 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz</title>
-    <link rel="stylesheet" href="questions.css">
-    <script defer src="questions.js"></script>
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="result.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="result.js" defer></script>
 </head>
 <body>
-    this is result page.
+    <!-- back-button -->
+    <button class="back-button" id="back" onclick="location.href='../navpage2/navpage2.html'">
+        <i class="fa fa-sign-out"></i> BACK
+    </button>
+
+    <div class="result-container">
+        <h1>Quiz Results</h1>
+        <p>Correct Answers: <span id="correct">...</span></p>
+        <p>Wrong Answers: <span id="wrong">...</span></p>
+        <h3>Round Score: <span id="current-score">...</span></h3>
+        <h3>Total Score: <span id="total-score">...</span></h3>
+        <!-- try again -->
+        <button class="retry" onclick="location.href='quiz.html'">Try Again</button>
+    </div>
 </body>
+</html>
