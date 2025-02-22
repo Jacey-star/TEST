@@ -25,7 +25,7 @@ function createFirework() {
     
     const x = Math.random() * window.innerWidth;
     const y = Math.random() * window.innerHeight;
-    const colors = ["pink", "yellow", "blue", "red", "purple", "white"];
+    const colors = ["orange", "blue", "red", "purple", "green"];
     const color = colors[Math.floor(Math.random() * colors.length)];
 
     for (let i = 0; i < 20; i++) { // 生成 20 个粒子

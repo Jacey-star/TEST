@@ -4,7 +4,7 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f0fce1;
+    background-image: linear-gradient(100deg, #265e78, #ddffb3);
 }
 /* keep the container centered */
 .container {
@@ -29,8 +29,12 @@ html, body {
 /* 让 START 按钮的位置与屏幕高度有关 */
 /* the position of the START button dependent on the screen height */
 .start-button {
-    background-image: linear-gradient(100deg, rgb(104, 170, 178), rgb(121, 176, 98), rgb(178, 204, 134));
-    color: white;
+    background-image: linear-gradient(100deg, rgb(63, 179, 192), rgb(107, 190, 71), rgb(173, 218, 97));
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    text-shadow: 
+        -1px  3px 0 rgba(0, 0, 0, 0.243),
+         1px  3px 0 rgba(0, 0, 0, 0.236);
     font-size: 32px;
     padding: 10px 50px;
     border: none;
@@ -41,7 +45,11 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-
+    box-shadow: 
+        -1px 1px 0 rgba(0, 0, 0, 0.243),  /* 左上阴影 */
+        1px 1px 0 rgba(0, 0, 0, 0.236),
+        3px 1px 0 rgba(0, 0, 0, 0.243),
+        -1px 3px 0 rgba(0, 0, 0, 0.243);  /* 左上阴影 */
     position: absolute;
     top: 20vh; /* 70%  */
     left: 50%;
@@ -55,7 +63,7 @@ html, body {
     position: absolute;
     top: 20px;
     left: 20px;
-    background: rgba(0, 0, 0, 0.5); 
+    background: rgba(0, 0, 0, 0); 
     color: white;
     font-size: 18px;
     padding: 10px 20px;
