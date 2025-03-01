@@ -20,13 +20,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 初始化地图
     function initMap() {
-        // 初始化地图在校园中心位置（这里使用示例坐标，应替换为实际校园坐标）
-        const campusCenter = [39.9042, 116.4074]; // 示例：北京市中心
+        // 先用一个默认位置初始化地图（可以修改为你所在城市的中心位置）
+        const defaultPosition = [39.9042, 116.4074]; // 北京市中心，你可以根据需要修改
         
-        map = L.map('map').setView(campusCenter, 16);
+        // 初始化地图但先不设置视图
+        map = L.map('map');
         
+        // 添加地图图层
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> 贡献者'
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
         
         // 创建路线图层
@@ -36,28 +38,72 @@ document.addEventListener('DOMContentLoaded', function() {
             opacity: 0.7
         }).addTo(map);
         
-        // 尝试获取当前位置
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                const userLocation = [position.coords.latitude, position.coords.longitude];
-                map.setView(userLocation, 16);
-                
-                // 创建用户位置标记
-                userMarker = L.marker(userLocation).addTo(map);
-                userMarker.bindPopup('您的当前位置').openPopup();
-            },
-            error => {
-                showAlert('无法获取您的位置，请确保已授权位置权限');
-                console.error('Geolocation error:', error);
-            },
-            { enableHighAccuracy: true }
-        );
+        // 立即尝试获取用户位置并自动居中地图
+        if (navigator.geolocation) {
+            // 显示加载中消息
+            showAlert('Getting your location...', 2000);
+            
+            // 使用高精度定位
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            };
+            
+            navigator.geolocation.getCurrentPosition(
+                // 成功获取位置
+                position => {
+                    const userLocation = [position.coords.latitude, position.coords.longitude];
+                    
+                    // 设置地图视图到用户位置
+                    map.setView(userLocation, 16);
+                    
+                    // 创建或更新用户位置标记
+                    if (userMarker) {
+                        userMarker.setLatLng(userLocation);
+                    } else {
+                        userMarker = L.marker(userLocation).addTo(map);
+                    }
+                    
+                    userMarker.bindPopup('Your current location').openPopup();
+                    
+                    showAlert('Located your position', 2000);
+                },
+                // 获取位置失败
+                error => {
+                    console.error('Failed to get location', error);
+                    // 定位失败时使用默认位置
+                    map.setView(defaultPosition, 12);
+                    showAlert('Unable to get your location, using default position', 3000);
+                    
+                    // 根据错误代码显示不同的错误消息
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            showAlert('You denied location permission, please allow it in browser settings', 5000);
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            showAlert('Location information unavailable, please check if your GPS is enabled', 5000);
+                            break;
+                        case error.TIMEOUT:
+                            showAlert('Location request timed out, please try again', 3000);
+                            break;
+                        default:
+                            showAlert('Failed to get location: ' + error.message, 3000);
+                    }
+                },
+                options
+            );
+        } else {
+            // 浏览器不支持地理位置API
+            map.setView(defaultPosition, 12);
+            showAlert('Your browser does not support geolocation', 3000);
+        }
     }
 
     // 开始追踪
     function startTracking() {
         if (!navigator.geolocation) {
-            showAlert('您的浏览器不支持地理位置功能');
+            showAlert('Your browser does not support geolocation');
             return;
         }
         
@@ -68,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function() {
             trackPolyline.setLatLngs([]);
             updateDistanceDisplay();
             startTime = new Date();
-            updateCarbonSaved();
             
             // 生成会话ID并发送到后端开始新会话
             sessionId = generateSessionId();
@@ -100,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
         watchId = navigator.geolocation.watchPosition(
             updatePosition,
             error => {
-                showAlert('位置追踪错误：' + error.message);
+                showAlert('Location tracking error: ' + error.message);
                 console.error('Tracking error:', error);
             },
             options
@@ -213,7 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 本地临时计算距离
                 distance += segmentDistance / 1000; // 转换为公里
                 updateDistanceDisplay();
-                updateCarbonSaved();
                 
                 // 每隔一定距离或时间将数据发送到后端
                 if (trackPoints.length % 10 === 0) { // 每10个点发送一次
@@ -255,9 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDistanceDisplay() {
         const distanceText = document.getElementById('distanceText');
         distanceText.textContent = distance.toFixed(1);
-        
-        // 更新进度圆环
-        updateProgressCircle();
     }
     
     // 更新速度显示
@@ -300,31 +341,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const seconds = elapsedTime.getUTCSeconds().toString().padStart(2, '0');
         
         document.getElementById('timeValue').textContent = `${minutes}:${seconds}`;
-    }
-    
-    // 更新进度圆环
-    function updateProgressCircle() {
-        const progressPercentage = Math.min(distance / 3, 1) * 100;
-        const progressFill = document.getElementById('progressFill');
-        const progressFill2 = document.getElementById('progressFill2');
-        
-        if (progressPercentage <= 50) {
-            progressFill.style.transform = `rotate(${progressPercentage * 3.6}deg)`;
-            progressFill.classList.remove('gt50');
-        } else {
-            progressFill.style.transform = 'rotate(180deg)';
-            progressFill.classList.add('gt50');
-            progressFill2.style.transform = `rotate(${(progressPercentage - 50) * 3.6}deg)`;
-        }
-    }
-    
-    // 更新碳排放节约
-    function updateCarbonSaved() {
-        const carbonValue = document.getElementById('carbonValue');
-        // 计算碳排放减少量（粗略估计）
-        // 步行/骑行与开车相比，每公里可减少约200克CO2
-        const carbonSaved = Math.round(distance * 200);
-        carbonValue.textContent = `${carbonSaved} 克`;
     }
     
     // 显示提示消息
@@ -386,25 +402,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             console.log('Start tracking sent:', data);
         }, 300);
-        
-        // 实际开发时使用以下代码
-        /*
-        fetch('/api/activity/start', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('连接服务器失败，请检查网络连接');
-        });
-        */
     }
     
     // 发送路径点到后端
@@ -430,36 +427,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (Math.abs(distance - serverDistance) / distance > 0.05) {
                 distance = serverDistance;
                 updateDistanceDisplay();
-                updateCarbonSaved();
-                showAlert('距离已由服务器校准');
+                showAlert('Distance calibrated by server');
             }
             
         }, 300);
-        
-        // 实际开发时使用以下代码
-        /*
-        fetch('/api/activity/update', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            
-            // 如果服务器返回校准的距离，进行更新
-            if (data.calibratedDistance) {
-                distance = data.calibratedDistance;
-                updateDistanceDisplay();
-                updateCarbonSaved();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-        */
     }
     
     // 发送暂停信息到后端
@@ -475,24 +446,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             console.log('Pause tracking sent:', data);
         }, 300);
-        
-        // 实际开发时使用以下代码
-        /*
-        fetch('/api/activity/pause', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-        */
     }
     
     // 发送完成信息到后端
@@ -503,8 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
             finalDistance: distance,
             totalElapsedTime: startTime ? (new Date() - startTime) : 0,
             mode: currentMode,
-            trackPoints: trackPoints,
-            carbonSaved: Math.round(distance * 200)
+            trackPoints: trackPoints
         };
         
         // 模拟API调用和响应
@@ -513,47 +465,21 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 模拟后端验证结果
             const isValidated = distance >= 3;
-            const serverDistance = distance * 0.98; // 模拟服务器端计算的最终距离
             
             if (isValidated) {
-                showAlert('恭喜！您已完成绿色出行挑战，获得30积分！', 5000);
+                showAlert('Congratulations! You have completed the green travel challenge and earned 30 points!', 5000);
             } else {
-                showAlert('活动已记录，但距离未达到3公里，无法获得积分', 5000);
+                showAlert('Activity recorded, but distance did not reach 3km, no points earned', 5000);
             }
             
         }, 1000);
-        
-        // 实际开发时使用以下代码
-        /*
-        fetch('/api/activity/complete', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            
-            if (data.validated) {
-                showAlert(`恭喜！您已完成绿色出行挑战，获得${data.pointsEarned}积分！`, 5000);
-            } else {
-                showAlert(data.message || '活动已记录，但未能通过验证', 5000);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('提交数据失败，请稍后再试', 5000);
-        });
-        */
     }
     
     // 模式切换处理
     document.querySelectorAll('.mode-option').forEach(option => {
         option.addEventListener('click', function() {
             if (isTracking) {
-                showAlert('请先暂停追踪再切换模式');
+                showAlert('Please pause tracking before switching modes');
                 return;
             }
             
@@ -577,16 +503,16 @@ document.addEventListener('DOMContentLoaded', function() {
             navigator.permissions.query({name: 'geolocation'})
                 .then(function(permissionStatus) {
                     if (permissionStatus.state === 'denied') {
-                        showAlert('请允许位置权限以使用绿色出行追踪功能');
+                        showAlert('Please allow location permission to use green travel tracking');
                     } else if (permissionStatus.state === 'prompt') {
-                        showAlert('使用此应用需要位置权限');
+                        showAlert('This app requires location permission');
                     }
                     
                     permissionStatus.onchange = function() {
                         if (this.state === 'denied') {
-                            showAlert('位置权限被拒绝，应用无法正常工作');
+                            showAlert('Location permission denied, the app cannot function properly');
                         } else if (this.state === 'granted') {
-                            showAlert('位置权限已授予，可以开始使用');
+                            showAlert('Location permission granted, you can start using the app');
                             initMap();
                         }
                     };

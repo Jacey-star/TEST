@@ -1,64 +1,64 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#4CAF50">
-    <title>绿色出行</title>
+    <title>Green Travel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css">
     <link rel="stylesheet" href="travel.css">
 </head>
 <body>
     <div class="container">
-        <!-- 地图容器放在顶部 -->
+        <!-- Map container placed at top -->
         <div class="map-container">
             <div id="map"></div>
         </div>
         
-        <!-- 控制面板放在底部 -->
+        <!-- Control panel placed at bottom -->
         <div class="control-panel">
-            <!-- 距离显示 -->
+            <!-- Distance display -->
             <div class="distance-display">
                 <div>
                     <span class="distance" id="distanceText">0.0</span>
-                    <span class="distance-target">公里 / 目标 3公里</span>
+                    <span class="distance-target">km / Target 3km</span>
                 </div>
             </div>
             
-            <!-- 统计数据 -->
+            <!-- Statistics -->
             <div class="stats-container">
                 <div class="stat-item">
                     <div class="stat-value" id="speedValue">0.0</div>
-                    <div class="stat-label">速度 (公里/小时)</div>
+                    <div class="stat-label">Speed (km/h)</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value" id="timeValue">00:00</div>
-                    <div class="stat-label">用时</div>
+                    <div class="stat-label">Time</div>
                 </div>
             </div>
             
-            <!-- 模式选择 - 更小巧的设计 -->
+            <!-- Mode selection - simplified design -->
             <div class="mode-selector">
                 <div class="mode-option active" data-mode="walking">
-                    <i class="fas fa-walking"></i> 步行
+                    <i class="fas fa-walking"></i> Walking
                 </div>
                 <div class="mode-option" data-mode="cycling">
-                    <i class="fas fa-bicycle"></i> 骑行
+                    <i class="fas fa-bicycle"></i> Cycling
                 </div>
             </div>
             
-            <!-- 操作按钮 -->
+            <!-- Action buttons -->
             <div class="action-buttons">
                 <button class="btn btn-start" id="startBtn">
-                    <i class="fas fa-play"></i> 开始
+                    <i class="fas fa-play"></i> Start
                 </button>
                 <button class="btn btn-pause" id="pauseBtn" disabled>
-                    <i class="fas fa-pause"></i> 暂停
+                    <i class="fas fa-pause"></i> Pause
                 </button>
                 <button class="btn btn-stop" id="stopBtn" disabled>
-                    <i class="fas fa-stop"></i> 结束
+                    <i class="fas fa-stop"></i> End
                 </button>
             </div>
         </div>
@@ -67,6 +67,6 @@
     <div class="alert" id="alert"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-    <script src="script.js"></script>
+    <script src="travel.js"></script>
 </body>
 </html>

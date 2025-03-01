@@ -1,4 +1,4 @@
-/* 移动优化版绿色出行追踪器 - CSS */
+/* Mobile-optimized Green Travel Tracker - CSS */
 
 :root {
     --primary-color: #4CAF50;
@@ -24,7 +24,7 @@ body {
     line-height: 1.5;
 }
 
-/* 主容器 */
+/* Main container */
 .container {
     max-width: 100%;
     margin: 0 auto;
@@ -34,7 +34,7 @@ body {
     height: 100vh;
 }
 
-/* 地图容器 - 放在顶部 */
+/* Map container - placed at top */
 .map-container {
     width: 100%;
     flex-grow: 1;
@@ -47,7 +47,7 @@ body {
     height: 100%;
 }
 
-/* 控制面板 - 放在底部 */
+/* Control panel - placed at bottom */
 .control-panel {
     background-color: var(--white);
     border-radius: 20px 20px 0 0;
@@ -57,7 +57,7 @@ body {
     z-index: 2;
 }
 
-/* 距离显示 */
+/* Distance display */
 .distance-display {
     display: flex;
     align-items: center;
@@ -77,7 +77,7 @@ body {
     margin-left: 5px;
 }
 
-/* 模式选择 - 简化设计 */
+/* Mode selection - simplified design */
 .mode-selector {
     display: flex;
     margin-bottom: 15px;
@@ -100,7 +100,7 @@ body {
     color: white;
 }
 
-/* 统计数据 */
+/* Statistics */
 .stats-container {
     display: flex;
     justify-content: space-between;
@@ -127,7 +127,7 @@ body {
     color: var(--light-text);
 }
 
-/* 操作按钮 */
+/* Action buttons */
 .action-buttons {
     display: flex;
     justify-content: space-between;
@@ -172,7 +172,7 @@ body {
     cursor: not-allowed;
 }
 
-/* 提示框 */
+/* Alert box */
 .alert {
     position: fixed;
     bottom: 20px;
@@ -192,7 +192,7 @@ body {
     opacity: 1;
 }
 
-/* 媒体查询 - 安全区域适配 */
+/* Media query - safe area adaptation */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
     .control-panel {
         padding-bottom: calc(15px + env(safe-area-inset-bottom));
