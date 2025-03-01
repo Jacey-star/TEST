@@ -1,0 +1,200 @@
+/* 移动优化版绿色出行追踪器 - CSS */
+
+:root {
+    --primary-color: #4CAF50;
+    --light-green: #7ed47e;
+    --light-gray: #e0e0e0;
+    --white: #ffffff;
+    --dark-text: #333333;
+    --light-text: #666666;
+    --shadow: 0 2px 5px rgba(0,0,0,0.1);
+    --border-radius: 8px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: var(--dark-text);
+    line-height: 1.5;
+}
+
+/* 主容器 */
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* 地图容器 - 放在顶部 */
+.map-container {
+    width: 100%;
+    flex-grow: 1;
+    position: relative;
+    z-index: 1;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* 控制面板 - 放在底部 */
+.control-panel {
+    background-color: var(--white);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    padding: 20px 15px;
+    position: relative;
+    z-index: 2;
+}
+
+/* 距离显示 */
+.distance-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.distance {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: var(--dark-text);
+}
+
+.distance-target {
+    font-size: 0.9rem;
+    color: var(--light-text);
+    margin-left: 5px;
+}
+
+/* 模式选择 - 简化设计 */
+.mode-selector {
+    display: flex;
+    margin-bottom: 15px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background-color: var(--light-gray);
+}
+
+.mode-option {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mode-option.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* 统计数据 */
+.stats-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.stat-item {
+    background-color: #f8f8f8;
+    border-radius: var(--border-radius);
+    padding: 10px;
+    flex: 1;
+    text-align: center;
+    margin: 0 5px;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--light-text);
+}
+
+/* 操作按钮 */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.btn {
+    flex: 1;
+    padding: 12px 0;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.btn-start {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-pause {
+    background-color: var(--light-gray);
+    color: var(--dark-text);
+}
+
+.btn-stop {
+    background-color: #f87c7c;
+    color: white;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 提示框 */
+.alert {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(51, 51, 51, 0.9);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.alert.show {
+    opacity: 1;
+}
+
+/* 媒体查询 - 安全区域适配 */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .control-panel {
+        padding-bottom: calc(15px + env(safe-area-inset-bottom));
+    }
+}

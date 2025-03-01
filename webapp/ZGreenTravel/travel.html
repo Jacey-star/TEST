@@ -1,12 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>navpage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#4CAF50">
+    <title>绿色出行</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css">
     <link rel="stylesheet" href="travel.css">
-    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
-    travel
+    <div class="container">
+        <!-- 地图容器放在顶部 -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+        
+        <!-- 控制面板放在底部 -->
+        <div class="control-panel">
+            <!-- 距离显示 -->
+            <div class="distance-display">
+                <div>
+                    <span class="distance" id="distanceText">0.0</span>
+                    <span class="distance-target">公里 / 目标 3公里</span>
+                </div>
+            </div>
+            
+            <!-- 统计数据 -->
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-value" id="speedValue">0.0</div>
+                    <div class="stat-label">速度 (公里/小时)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="timeValue">00:00</div>
+                    <div class="stat-label">用时</div>
+                </div>
+            </div>
+            
+            <!-- 模式选择 - 更小巧的设计 -->
+            <div class="mode-selector">
+                <div class="mode-option active" data-mode="walking">
+                    <i class="fas fa-walking"></i> 步行
+                </div>
+                <div class="mode-option" data-mode="cycling">
+                    <i class="fas fa-bicycle"></i> 骑行
+                </div>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="action-buttons">
+                <button class="btn btn-start" id="startBtn">
+                    <i class="fas fa-play"></i> 开始
+                </button>
+                <button class="btn btn-pause" id="pauseBtn" disabled>
+                    <i class="fas fa-pause"></i> 暂停
+                </button>
+                <button class="btn btn-stop" id="stopBtn" disabled>
+                    <i class="fas fa-stop"></i> 结束
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert" id="alert"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="script.js"></script>
 </body>
+</html>
