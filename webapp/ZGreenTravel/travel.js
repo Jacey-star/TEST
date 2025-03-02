@@ -12,16 +12,18 @@ document.addEventListener('DOMContentLoaded', function() {
     let watchId = null;
     let isTracking = false;
     let isPaused = false;
-    let currentMode = 'walking'; // 默认为步行模式
     let sessionId = null; // 当前会话ID，用于后端识别
-
+    
+    // 历史记录管理
+    let travelHistory = [];
+    
     // 屏幕唤醒锁
     let wakeLock = null;
     
     // 初始化地图
     function initMap() {
-        // 先用一个默认位置初始化地图（可以修改为你所在城市的中心位置）
-        const defaultPosition = [51.6231, 3.9447]; // 北京市中心，你可以根据需要修改
+        // 先用一个默认位置初始化地图
+        const defaultPosition = [51.6231, 3.9447];
         
         // 初始化地图但先不设置视图
         map = L.map('map');
@@ -37,8 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
             weight: 5,
             opacity: 0.7
         }).addTo(map);
-
-        
         
         // 立即尝试获取用户位置并自动居中地图
         if (navigator.geolocation) {
@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         userMarker = L.marker(userLocation).addTo(map);
                     }
-                    
                     
                     showAlert('Located your position', 2000);
                 },
@@ -100,137 +99,74 @@ document.addEventListener('DOMContentLoaded', function() {
             showAlert('Your browser does not support geolocation', 3000);
         }
     }
-
+    
     // 开始追踪
-// 修改startTracking函数，确保启动后立即启用暂停按钮
-function startTracking() {
-    if (!navigator.geolocation) {
-        showAlert('Your browser does not support geolocation');
-        return;
-    }
-    
-    // 如果不是从暂停恢复，则重置数据并创建新会话
-    if (!isPaused) {
-        distance = 0;
-        trackPoints = [];
-        trackPolyline.setLatLngs([]);
-        updateDistanceDisplay();
-        startTime = new Date();
+    function startTracking() {
+        if (!navigator.geolocation) {
+            showAlert('Your browser does not support geolocation');
+            return;
+        }
         
-        // 生成会话ID并发送到后端开始新会话
-        sessionId = generateSessionId();
-        sendTrackingStartToServer();
-    }
-    
-    isTracking = true;
-    isPaused = false;
-    
-    // 防止屏幕睡眠（如果支持）
-    requestWakeLock();
-    
-    // 确保暂停按钮立即可用 - 这是关键修改
-    const pauseBtn = document.getElementById('pauseBtn');
-    pauseBtn.disabled = false;
-    
-    // 更新其他按钮状态
-    document.getElementById('startBtn').disabled = true;
-    document.getElementById('stopBtn').disabled = false;
-    
-    // 开始定时更新时间
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(updateTimer, 1000);
-    
-    // 开始GPS追踪
-    const options = {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-    };
-    
-    watchId = navigator.geolocation.watchPosition(
-        updatePosition,
-        error => {
-            showAlert('Location tracking error: ' + error.message);
-            console.error('Tracking error:', error);
+        // 如果不是从暂停恢复，则重置数据并创建新会话
+        if (!isPaused) {
+            distance = 0;
+            trackPoints = [];
+            trackPolyline.setLatLngs([]);
+            updateDistanceDisplay();
+            startTime = new Date();
             
-            // 尽管有错误，仍然保持暂停按钮可用
-            document.getElementById('pauseBtn').disabled = false;
-        },
-        options
-    );
-    
-    console.log('Tracking started. Pause button enabled.');
-}
-
-// 确保pauseTracking函数正确工作
-function pauseTracking() {
-    if (!isTracking) {
-        console.log('Cannot pause: tracking not active');
-        return;
+            // 生成会话ID并发送到后端开始新会话
+            sessionId = generateSessionId();
+            sendTrackingStartToServer();
+        }
+        
+        isTracking = true;
+        isPaused = false;
+        
+        // 防止屏幕睡眠（如果支持）
+        requestWakeLock();
+        
+        // 确保暂停按钮立即可用
+        const pauseBtn = document.getElementById('pauseBtn');
+        pauseBtn.disabled = false;
+        
+        // 更新其他按钮状态
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+        
+        // 开始定时更新时间
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 1000);
+        
+        // 开始GPS追踪
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        };
+        
+        watchId = navigator.geolocation.watchPosition(
+            updatePosition,
+            error => {
+                showAlert('Location tracking error: ' + error.message);
+                console.error('Tracking error:', error);
+                
+                // 尽管有错误，仍然保持暂停按钮可用
+                document.getElementById('pauseBtn').disabled = false;
+            },
+            options
+        );
+        
+        console.log('Tracking started. Pause button enabled.');
     }
-    
-    isTracking = false;
-    isPaused = true;
-    
-    // 停止位置监听
-    if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-    }
-    
-    // 停止计时器
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
-    
-    // 释放唤醒锁
-    releaseWakeLock();
-    
-    // 更新按钮状态
-    document.getElementById('startBtn').disabled = false;
-    document.getElementById('pauseBtn').disabled = true;
-    document.getElementById('stopBtn').disabled = false;
-    
-    // 通知后端暂停
-    sendTrackingPauseToServer();
-    
-    console.log('Tracking paused. Start button re-enabled.');
-}
-
-// 确保初始状态设置正确
-function initializeApp() {
-    // 初始化按钮状态
-    document.getElementById('startBtn').disabled = false;
-    document.getElementById('pauseBtn').disabled = true;
-    document.getElementById('stopBtn').disabled = true;
-    
-    // 添加事件监听器，确保按钮点击事件被正确处理
-    document.getElementById('startBtn').addEventListener('click', function() {
-        console.log('Start button clicked');
-        startTracking();
-    });
-    
-    document.getElementById('pauseBtn').addEventListener('click', function() {
-        console.log('Pause button clicked');
-        pauseTracking();
-    });
-    
-    document.getElementById('stopBtn').addEventListener('click', function() {
-        console.log('Stop button clicked');
-        stopTracking();
-    });
-}
-
-// 在页面加载完成后调用初始化
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-    initMap();
-    checkLocationPermission();
-});
     
     // 暂停追踪
     function pauseTracking() {
+        if (!isTracking) {
+            console.log('Cannot pause: tracking not active');
+            return;
+        }
+        
         isTracking = false;
         isPaused = true;
         
@@ -256,6 +192,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 通知后端暂停
         sendTrackingPauseToServer();
+        
+        console.log('Tracking paused. Start button re-enabled.');
     }
     
     // 结束追踪
@@ -285,6 +223,21 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('startBtn').disabled = false;
         document.getElementById('pauseBtn').disabled = true;
         document.getElementById('stopBtn').disabled = true;
+        
+        // 收集当前旅程数据
+        const tripData = {
+            sessionId: sessionId,
+            startTime: startTime,
+            endTime: new Date(),
+            distance: distance,
+            duration: startTime ? (new Date() - startTime) : 0,
+            points: trackPoints,
+            isCompleted: distance >= 3,
+            pointsEarned: distance >= 3 ? 30 : 0
+        };
+        
+        // 保存到历史记录
+        saveToHistory(tripData);
         
         // 发送完整轨迹到后端进行验证
         sendTrackingCompleteToServer();
@@ -322,8 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
             );
             
             // 简单验证 - 防止GPS跳跃
-            // 步行模式下不超过每秒3米，骑行模式下不超过每秒8米
-            const maxSpeedPerSec = currentMode === 'walking' ? 3 : 10000000000;
+            // 最大移动速度限制（合并模式后统一使用10米/秒）
+            const maxSpeedPerSec = 10;
             
             // 估算速度
             let speed = 0;
@@ -347,8 +300,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         lastPosition = currentPosition;
-        
-     
     }
     
     // 计算两点之间的距离（使用Haversine公式）
@@ -418,56 +369,54 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // 显示提示消息
-    // 替换原有的 showAlert 函数
-    // Display alert message - improved version
-function showAlert(message, duration = 3000) {
-    const alert = document.getElementById('alert');
-    
-    // Automatically determine message type based on content
-    let type = 'info'; // Default type
-    
-    // Success type determination
-    if (message.includes('Congratulation') || 
-        message.includes('Located') ||
-        message.includes('complete') || 
-        message.includes('position') ||
-        message.includes('granted')) {
-        type = 'success';
-    } 
-    // Error type determination
-    else if (message.includes('error') || 
-             message.includes('failed') || 
-             message.includes('Unable') ||
-             message.includes('denied') ||
-             message.includes('does not support')) {
-        type = 'error';
-    } 
-    // Warning type determination
-    else if (message.includes('Please') || 
-             message.includes('please') ||
-             message.includes('did not reach') ||
-             message.includes('calibrated') ||
-             message.includes('timed out')) {
-        type = 'warning';
+    function showAlert(message, duration = 3000) {
+        const alert = document.getElementById('alert');
+        
+        // Automatically determine message type based on content
+        let type = 'info'; // Default type
+        
+        // Success type determination
+        if (message.includes('Congratulation') || 
+            message.includes('Located') ||
+            message.includes('complete') || 
+            message.includes('position') ||
+            message.includes('granted')) {
+            type = 'success';
+        } 
+        // Error type determination
+        else if (message.includes('error') || 
+                message.includes('failed') || 
+                message.includes('Unable') ||
+                message.includes('denied') ||
+                message.includes('does not support')) {
+            type = 'error';
+        } 
+        // Warning type determination
+        else if (message.includes('Please') || 
+                message.includes('please') ||
+                message.includes('did not reach') ||
+                message.includes('calibrated') ||
+                message.includes('timed out')) {
+            type = 'warning';
+        }
+        
+        // Set type attribute
+        alert.setAttribute('data-type', type);
+        
+        // Set progress bar animation duration
+        document.documentElement.style.setProperty('--alert-duration', `${duration}ms`);
+        
+        // Set message content
+        alert.textContent = message;
+        
+        // Show the alert
+        alert.classList.add('show');
+        
+        // Auto-hide the alert
+        setTimeout(() => {
+            alert.classList.remove('show');
+        }, duration);
     }
-    
-    // Set type attribute
-    alert.setAttribute('data-type', type);
-    
-    // Set progress bar animation duration
-    document.documentElement.style.setProperty('--alert-duration', `${duration}ms`);
-    
-    // Set message content
-    alert.textContent = message;
-    
-    // Show the alert
-    alert.classList.add('show');
-    
-    // Auto-hide the alert
-    setTimeout(() => {
-        alert.classList.remove('show');
-    }, duration);
-}
     
     // 请求保持屏幕唤醒（如果浏览器支持）
     async function requestWakeLock() {
@@ -505,7 +454,6 @@ function showAlert(message, duration = 3000) {
         const data = {
             sessionId: sessionId,
             startTime: new Date().toISOString(),
-            mode: currentMode,
             deviceInfo: {
                 userAgent: navigator.userAgent,
                 screenWidth: window.innerWidth,
@@ -549,103 +497,179 @@ function showAlert(message, duration = 3000) {
     }
     
     // 发送暂停信息到后端
-    function sendTrackingPauseToServer() {
-        const data = {
-            sessionId: sessionId,
-            pauseTime: new Date().toISOString(),
-            currentDistance: distance,
-            elapsedTime: startTime ? (new Date() - startTime) : 0
-        };
-        
-        // 模拟API调用
-        setTimeout(() => {
-            console.log('Pause tracking sent:', data);
-        }, 300);
-    }
+        // 发送完成信息到后端
+        function sendTrackingCompleteToServer() {
+            const data = {
+                sessionId: sessionId,
+                completeTime: new Date().toISOString(),
+                finalDistance: distance,
+                totalElapsedTime: startTime ? (new Date() - startTime) : 0,
+                trackPoints: trackPoints
+            };
+            
+            // 模拟API调用和响应
+            setTimeout(() => {
+                console.log('Complete tracking sent:', data);
+                
+                // 模拟后端验证结果
+                const isValidated = distance >= 3;
+                
+                if (isValidated) {
+                    // 使用地图弹窗显示成功信息
+                    const successPopupContent = `
+                        <div style="text-align: center;">
+                            <h3 style="margin: 5px 0 10px 0;">Congratulations!</h3>
+                            <div style="color:rgb(255, 255, 255); font-size: 28px; margin: 10px 0;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <p style="margin: 10px 0;">You have completed the green travel challenge and earned 30 points!</p>
+                        </div>
+                    `;
+                    
+                    // 在用户当前位置创建一个弹窗
+                    L.popup()
+                        .setLatLng(userMarker.getLatLng())
+                        .setContent(successPopupContent)
+                        .openOn(map);
+                } else {
+                    // 使用地图弹窗显示失败信息
+                    const failurePopupContent = `
+                        <div style="text-align: center;">
+                            <h3 style="margin: 5px 0 10px 0;">Almost There!</h3>
+                            <div style="color:rgb(255, 255, 255); font-size: 28px; margin: 10px 0;">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <p style="margin: 10px 0;">Activity recorded, but distance did not reach 3km. No points earned this time.</p>
+                            <p style="margin: 5px 0; font-size: 0.9rem; color: #666;">Current distance: ${distance.toFixed(1)}km / Target: 3km</p>
+                        </div>
+                    `;
+                    
+                    // 在用户当前位置创建一个弹窗
+                    L.popup()
+                        .setLatLng(userMarker.getLatLng())
+                        .setContent(failurePopupContent)
+                        .openOn(map);
+                }
+                
+            }, 1000);
+        }
     
-    // 发送完成信息到后端
-    function sendTrackingCompleteToServer() {
-        const data = {
-            sessionId: sessionId,
-            completeTime: new Date().toISOString(),
-            finalDistance: distance,
-            totalElapsedTime: startTime ? (new Date() - startTime) : 0,
-            mode: currentMode,
-            trackPoints: trackPoints
-        };
+    // ---------------- 历史记录管理 ----------------
+    
+    // 保存到历史记录
+    function saveToHistory(tripData) {
+        // 从本地存储获取已保存的历史记录
+        let history = [];
+        const savedHistory = localStorage.getItem('travelHistory');
         
-        // 模拟API调用和响应
-        setTimeout(() => {
-            console.log('Complete tracking sent:', data);
-            
-            // 模拟后端验证结果
-            const isValidated = distance >= 3;
-            
-            if (isValidated) {
-                // 使用地图弹窗显示成功信息，这样可以更宽
-                const successPopupContent = `
-                    <div style="text-align: center;">
-                        <h3 style="margin: 5px 0 10px 0;">Congratulations!</h3>
-                        <div style="color:rgb(255, 255, 255); font-size: 28px; margin: 10px 0;">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <p style="margin: 10px 0;">You have completed the green travel challenge and earned 30 points!</p>
-                    </div>
-                `;
-                
-                // 在用户当前位置创建一个弹窗
-                L.popup()
-                    .setLatLng(userMarker.getLatLng())
-                    .setContent(successPopupContent)
-                    .openOn(map);
-                
-            
-            } else {
-                // 使用地图弹窗显示失败信息
-                const failurePopupContent = `
-                    <div style="text-align: center;">
-                        <h3 style="margin: 5px 0 10px 0;">Almost There!</h3>
-                        <div style="color:rgb(255, 255, 255); font-size: 28px; margin: 10px 0;">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <p style="margin: 10px 0;">Activity recorded, but distance did not reach 3km. No points earned this time.</p>
-                        <p style="margin: 5px 0; font-size: 0.9rem; color: #666;">Current distance: ${distance.toFixed(1)}km / Target: 3km</p>
-                    </div>
-                `;
-                
-                // 在用户当前位置创建一个弹窗
-                L.popup()
-                    .setLatLng(userMarker.getLatLng())
-                    .setContent(failurePopupContent)
-                    .openOn(map);
-                
-                
+        if (savedHistory) {
+            try {
+                history = JSON.parse(savedHistory);
+            } catch (e) {
+                console.error('Error parsing saved history', e);
+                history = [];
             }
-            
-        }, 1000);
+        }
+        
+        // 添加新记录
+        history.unshift({
+            id: tripData.sessionId,
+            date: new Date().toISOString(),
+            distance: tripData.distance.toFixed(1),
+            duration: formatDuration(tripData.duration),
+            isCompleted: tripData.isCompleted,
+            pointsEarned: tripData.pointsEarned
+        });
+        
+        // 最多保存最近20条记录
+        if (history.length > 20) {
+            history = history.slice(0, 20);
+        }
+        
+        // 保存到本地存储
+        localStorage.setItem('travelHistory', JSON.stringify(history));
+        
+        // 更新历史记录UI
+        updateHistoryUI();
     }
     
-    // 模式切换处理
-    document.querySelectorAll('.mode-option').forEach(option => {
-        option.addEventListener('click', function() {
-            if (isTracking) {
-                showAlert('Please pause tracking before switching modes');
+        // 完全修改历史记录项结构的updateHistoryUI函数
+        function updateHistoryUI() {
+            const historyList = document.getElementById('historyList');
+            const savedHistory = localStorage.getItem('travelHistory');
+            
+            // 清空当前列表
+            historyList.innerHTML = '';
+            
+            if (!savedHistory || JSON.parse(savedHistory).length === 0) {
+                historyList.innerHTML = '<div class="no-records">No travel records yet. Start your green travel journey!</div>';
                 return;
             }
             
-            document.querySelectorAll('.mode-option').forEach(opt => {
-                opt.classList.remove('active');
+            // 添加每个历史记录
+            const history = JSON.parse(savedHistory);
+            
+            history.forEach(record => {
+                const date = new Date(record.date);
+                const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${record.isCompleted ? 'success' : 'incomplete'}`;
+                
+                // 重新设计历史记录项的HTML结构，只保留一个删除按钮
+                historyItem.innerHTML = `
+                    <div class="history-date">
+                        ${formattedDate}
+                        <span class="history-status ${record.isCompleted ? 'status-complete' : 'status-incomplete'}">
+                            ${record.isCompleted ? 'Completed' : 'Incomplete'}
+                        </span>
+                    </div>
+                    <div class="history-stats">
+                        <div class="history-stat">
+                            <div class="history-stat-value">${record.distance} km</div>
+                            <div class="history-stat-label">Distance</div>
+                        </div>
+                        <div class="history-stat">
+                            <div class="history-stat-value">${record.duration}</div>
+                            <div class="history-stat-label">Duration</div>
+                        </div>
+                        <div class="history-stat">
+                            <div class="history-stat-value">${record.pointsEarned}</div>
+                            <div class="history-stat-label">Points</div>
+                        </div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="history-btn delete-btn" data-id="${record.id}" onclick="deleteRecord('${record.id}')">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </div>
+                `;
+                
+                historyList.appendChild(historyItem);
             });
             
-            this.classList.add('active');
-            currentMode = this.dataset.mode;
-        });
-    });
+            // 只保留删除记录功能
+            window.deleteRecord = function(recordId) {
+                // 从本地存储中删除记录
+                const savedHistory = localStorage.getItem('travelHistory');
+                if (savedHistory) {
+                    let history = JSON.parse(savedHistory);
+                    history = history.filter(item => item.id !== recordId);
+                    localStorage.setItem('travelHistory', JSON.stringify(history));
+                    
+                    // 更新UI
+                    updateHistoryUI();
+                    showAlert('Record deleted', 2000);
+                }
+            };
+            
+            // 确保全局没有viewRoute函数
+            if (window.viewRoute) {
+                delete window.viewRoute;
+            }
+        }
     
-    // 按钮事件监听
-    document.getElementById('startBtn').addEventListener('click', startTracking);
-    document.getElementById('pauseBtn').addEventListener('click', pauseTracking);
-    document.getElementById('stopBtn').addEventListener('click', stopTracking);
+    // ---------------- 页面初始化和事件绑定 ----------------
     
     // 检查位置权限
     function checkLocationPermission() {
@@ -653,16 +677,16 @@ function showAlert(message, duration = 3000) {
             navigator.permissions.query({name: 'geolocation'})
                 .then(function(permissionStatus) {
                     if (permissionStatus.state === 'denied') {
-                        showAlert('Please allow location permission to use green travel tracking');
+                        showAlert('Please allow location permission to use green travel tracking', 5000);
                     } else if (permissionStatus.state === 'prompt') {
-                        showAlert('This app requires location permission');
+                        showAlert('This app requires location permission', 3000);
                     }
                     
                     permissionStatus.onchange = function() {
                         if (this.state === 'denied') {
-                            showAlert('Location permission denied, the app cannot function properly');
+                            showAlert('Location permission denied, the app cannot function properly', 5000);
                         } else if (this.state === 'granted') {
-                            showAlert('Location permission granted, you can start using the app');
+                            showAlert('Location permission granted, you can start using the app', 3000);
                             initMap();
                         }
                     };
@@ -671,6 +695,46 @@ function showAlert(message, duration = 3000) {
     }
     
     // 初始化应用
-    initMap();
-    checkLocationPermission();
+    function initApp() {
+        // 初始化地图
+        initMap();
+        
+        // 检查位置权限
+        checkLocationPermission();
+        
+        // 初始化按钮状态
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('pauseBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = true;
+        
+        // 加载历史记录
+        updateHistoryUI();
+        
+        // 绑定按钮事件
+        document.getElementById('startBtn').addEventListener('click', startTracking);
+        document.getElementById('pauseBtn').addEventListener('click', pauseTracking);
+        document.getElementById('stopBtn').addEventListener('click', stopTracking);
+        
+        // 绑定标签切换事件
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 切换标签活动状态
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 切换面板显示
+                const tabName = this.dataset.tab;
+                document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+                document.getElementById(`${tabName}Panel`).classList.add('active');
+                
+                // 如果切换到地图标签，刷新地图
+                if (tabName === 'tracking' && map) {
+                    setTimeout(() => map.invalidateSize(), 100);
+                }
+            });
+        });
+    }
+    
+    // 初始化应用
+    initApp();
 });

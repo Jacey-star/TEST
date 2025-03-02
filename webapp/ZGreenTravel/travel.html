@@ -17,8 +17,18 @@
             <div id="map"></div>
         </div>
         
-        <!-- Control panel placed at bottom -->
-        <div class="control-panel">
+        <!-- Tab navigation -->
+        <div class="tab-navigation">
+            <div class="tab active" data-tab="tracking">
+                <i class="fas fa-map-marker-alt"></i> Tracking
+            </div>
+            <div class="tab" data-tab="history">
+                <i class="fas fa-history"></i> History
+            </div>
+        </div>
+        
+        <!-- Tracking panel -->
+        <div class="panel tracking-panel active" id="trackingPanel">
             <!-- Distance display -->
             <div class="distance-display">
                 <div>
@@ -39,16 +49,6 @@
                 </div>
             </div>
             
-            <!-- Mode selection - simplified design -->
-            <div class="mode-selector">
-                <div class="mode-option active" data-mode="walking">
-                    <i class="fas fa-walking"></i> Walking
-                </div>
-                <div class="mode-option" data-mode="cycling">
-                    <i class="fas fa-bicycle"></i> Cycling
-                </div>
-            </div>
-            
             <!-- Action buttons -->
             <div class="action-buttons">
                 <button class="btn btn-start" id="startBtn">
@@ -62,11 +62,21 @@
                 </button>
             </div>
         </div>
+        
+        <!-- History panel -->
+        <div class="panel history-panel" id="historyPanel">
+            <h2 class="history-title">Your Travel History</h2>
+            
+            <div class="history-list" id="historyList">
+                <!-- Records will be inserted here dynamically -->
+                <div class="no-records">No travel records yet. Start your green travel journey!</div>
+            </div>
+        </div>
     </div>
     
     <div class="alert" id="alert"></div>
 
-    <!-- 完成模态框 -->
+    <!-- Completion modal -->
     <div class="success-modal" id="completionModal" style="display: none;">
         <div class="modal-content">
             <div id="modalSuccess">

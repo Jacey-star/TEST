@@ -47,14 +47,54 @@ body {
     height: 100%;
 }
 
-/* Control panel - placed at bottom */
-.control-panel {
+/* Tab navigation */
+.tab-navigation {
+    display: flex;
     background-color: var(--white);
-    border-radius: 20px 20px 0 0;
+    border-top: 1px solid var(--light-gray);
+    position: relative;
+    z-index: 3;
+}
+
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    color: var(--light-text);
+}
+
+.tab.active {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.tab i {
+    margin-right: 5px;
+}
+
+/* Panel base style */
+.panel {
+    background-color: var(--white);
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
     padding: 20px 15px;
     position: relative;
     z-index: 2;
+    display: none;
+}
+
+.panel.active {
+    display: block;
+}
+
+/* Tracking panel specific styles */
+.tracking-panel {
+    border-radius: 0;
+    padding-top: 20px;
 }
 
 /* Distance display */
@@ -75,29 +115,6 @@ body {
     font-size: 0.9rem;
     color: var(--light-text);
     margin-left: 5px;
-}
-
-/* Mode selection - simplified design */
-.mode-selector {
-    display: flex;
-    margin-bottom: 15px;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    background-color: var(--light-gray);
-}
-
-.mode-option {
-    flex: 1;
-    text-align: center;
-    padding: 8px 0;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.mode-option.active {
-    background-color: var(--primary-color);
-    color: white;
 }
 
 /* Statistics */
@@ -172,12 +189,139 @@ body {
     cursor: not-allowed;
 }
 
+/* History panel specific styles */
+.history-panel {
+    padding-top: 15px;
+}
+
+.history-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.history-list {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.history-item {
+    background-color: #f8f8f8;
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--primary-color);
+    animation: fadeIn 0.3s ease-in;
+    position: relative;
+    padding-bottom: 40px; /* 为底部的按钮留出空间 */
+}
+
+.history-item.success {
+    border-left-color: var(--primary-color);
+}
+
+.history-item.incomplete {
+    border-left-color: #f87c7c;
+}
+
+.history-date {
+    font-size: 0.85rem;
+    color: var(--light-text);
+    margin-bottom: 5px;
+}
+
+.history-stats {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 0.9rem;
+}
+
+.history-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.history-stat-value {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: var(--dark-text);
+}
+
+.history-stat-label {
+    font-size: 0.75rem;
+    color: var(--light-text);
+}
 
 
-/* 改进的弹窗样式 */
+
+/* 重新定位history-actions容器到右下角 */
+.history-actions {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    margin-top: 0; /* 移除原有的上边距 */
+    display: block; /* 改为块级元素 */
+}
+
+/* 调整删除按钮样式 */
+.history-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    background-color: #ffebee;
+    color: #e53935;
+}
+
+.history-btn:hover {
+    background-color: #ffcdd2;
+}
+
+.history-btn i {
+    margin-right: 5px;
+}
+
+.history-status {
+    font-size: 0.85rem;
+    border-radius: 20px;
+    padding: 2px 8px;
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.status-complete {
+    background-color: #e8f5e9;
+    color: var(--primary-color);
+}
+
+.status-incomplete {
+    background-color: #ffebee;
+    color: #e53935;
+}
+
+.no-records {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--light-text);
+    font-size: 0.95rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Alert styles */
 .alert {
     position: fixed;
-    top: 20px;  /* 将弹窗放在顶部而非底部 */
+    top: 20px;
     left: 50%;
     transform: translateX(-50%) translateY(-100%);
     background-color: var(--primary-color);
@@ -198,7 +342,7 @@ body {
 }
 
 .alert::before {
-    content: '\f05a';  /* 默认使用信息图标 */
+    content: '\f05a';
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
     margin-right: 10px;
@@ -210,14 +354,13 @@ body {
     transform: translateX(-50%) translateY(0);
 }
 
-/* 自动添加图标和颜色变化 */
 .alert[data-type="success"] {
     background-color: var(--primary-color);
     border-left-color: var(--light-green);
 }
 
 .alert[data-type="success"]::before {
-    content: '\f058';  /* 成功图标 */
+    content: '\f058';
     color: var(--light-green);
 }
 
@@ -227,7 +370,7 @@ body {
 }
 
 .alert[data-type="error"]::before {
-    content: '\f057';  /* 错误图标 */
+    content: '\f057';
     color: #ffcdd2;
 }
 
@@ -237,11 +380,10 @@ body {
 }
 
 .alert[data-type="warning"]::before {
-    content: '\f071';  /* 警告图标 */
+    content: '\f071';
     color: #ffe0b2;
 }
 
-/* 添加进度条 */
 .alert::after {
     content: '';
     position: absolute;
@@ -259,7 +401,6 @@ body {
     100% { transform: scaleX(0); }
 }
 
-/* 为进度条设置动画持续时间的变量 */
 :root {
     --alert-duration: 3000ms;
 }
@@ -268,32 +409,26 @@ body {
     animation-duration: var(--alert-duration);
 }
 
-
-/* 添加到travel.css文件中 */
-
-/* 扩展成功消息弹窗的宽度 */
+/* Leaflet popup styles */
 .leaflet-popup-content {
-    min-width: 280px; /* 增加最小宽度 */
-    max-width: 320px; /* 设置最大宽度 */
-    text-align: center; /* 文本居中 */
-    padding: 8px 5px; /* 稍微调整内边距 */
+    min-width: 280px;
+    max-width: 320px;
+    text-align: center;
+    padding: 8px 5px;
 }
 
-/* 调整弹窗样式 */
 .leaflet-popup-content-wrapper {
-    background-color: var(--primary-color); /* 使用主题绿色 */
-    color: white; /* 白色文本 */
-    border-radius: 8px; /* 圆角 */
-    font-weight: 500; /* 稍微加粗字体 */
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+    font-weight: 500;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* 移除弹窗尖角部分的背景色，使其与弹窗保持一致 */
 .leaflet-popup-tip {
     background-color: var(--primary-color);
 }
 
-/* 调整成功图标样式 */
 .success-icon {
     display: block;
     margin: 5px auto;
