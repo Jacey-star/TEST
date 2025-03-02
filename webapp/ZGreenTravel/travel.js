@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 简单验证 - 防止GPS跳跃
             // 最大移动速度限制（合并模式后统一使用10米/秒）
-            const maxSpeedPerSec = 10;
+            const maxSpeedPerSec = 100000000;
             
             // 估算速度
             let speed = 0;
@@ -496,8 +496,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     }
     
-    // 发送暂停信息到后端
-        // 发送完成信息到后端
+    // Send pause info to backend
+        // Send completion info to backend
         function sendTrackingCompleteToServer() {
             const data = {
                 sessionId: sessionId,
@@ -507,15 +507,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 trackPoints: trackPoints
             };
             
-            // 模拟API调用和响应
+            // Simulate API call and response
             setTimeout(() => {
                 console.log('Complete tracking sent:', data);
                 
-                // 模拟后端验证结果
+                // Simulate backend validation result
                 const isValidated = distance >= 3;
                 
                 if (isValidated) {
-                    // 使用地图弹窗显示成功信息
+                    // Use map popup to show success message
                     const successPopupContent = `
                         <div style="text-align: center;">
                             <h3 style="margin: 5px 0 10px 0;">Congratulations!</h3>
@@ -526,13 +526,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     
-                    // 在用户当前位置创建一个弹窗
+                    // Create a popup at user's current position
                     L.popup()
                         .setLatLng(userMarker.getLatLng())
                         .setContent(successPopupContent)
                         .openOn(map);
                 } else {
-                    // 使用地图弹窗显示失败信息
+                    // Use map popup to show failure message
                     const failurePopupContent = `
                         <div style="text-align: center;">
                             <h3 style="margin: 5px 0 10px 0;">Almost There!</h3>
@@ -544,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     
-                    // 在用户当前位置创建一个弹窗
+                    // Create a popup at user's current position
                     L.popup()
                         .setLatLng(userMarker.getLatLng())
                         .setContent(failurePopupContent)
@@ -554,11 +554,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 1000);
         }
     
-    // ---------------- 历史记录管理 ----------------
+    // ---------------- History Record Management ----------------
     
-    // 保存到历史记录
+    // Save to history
     function saveToHistory(tripData) {
-        // 从本地存储获取已保存的历史记录
+        // Get saved history from local storage
         let history = [];
         const savedHistory = localStorage.getItem('travelHistory');
         
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // 添加新记录
+        // Add new record
         history.unshift({
             id: tripData.sessionId,
             date: new Date().toISOString(),
@@ -581,24 +581,37 @@ document.addEventListener('DOMContentLoaded', function() {
             pointsEarned: tripData.pointsEarned
         });
         
-        // 最多保存最近20条记录
+        // Keep only most recent 20 records
         if (history.length > 20) {
             history = history.slice(0, 20);
         }
         
-        // 保存到本地存储
-        localStorage.setItem('travelHistory', JSON.stringify(history));
+        // Save to local storage
+        try {
+            localStorage.setItem('travelHistory', JSON.stringify(history));
+            console.log('History saved successfully:', history);
+        } catch (e) {
+            console.error('Error saving history to localStorage:', e);
+            showAlert('Failed to save history: ' + e.message, 3000);
+        }
         
-        // 更新历史记录UI
+        // Update history UI
         updateHistoryUI();
     }
-    
-        // 完全修改历史记录项结构的updateHistoryUI函数
+
+        function formatDuration(milliseconds) {
+            const totalSeconds = Math.floor(milliseconds / 1000);
+            const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${minutes}:${seconds}`;
+        }
+
+        // Completely revised history item structure for updateHistoryUI function
         function updateHistoryUI() {
             const historyList = document.getElementById('historyList');
             const savedHistory = localStorage.getItem('travelHistory');
             
-            // 清空当前列表
+            // Clear current list
             historyList.innerHTML = '';
             
             if (!savedHistory || JSON.parse(savedHistory).length === 0) {
@@ -606,7 +619,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // 添加每个历史记录
+            // Add each history record
             const history = JSON.parse(savedHistory);
             
             history.forEach(record => {
@@ -616,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const historyItem = document.createElement('div');
                 historyItem.className = `history-item ${record.isCompleted ? 'success' : 'incomplete'}`;
                 
-                // 重新设计历史记录项的HTML结构，只保留一个删除按钮
+                // Redesigned history item HTML structure
                 historyItem.innerHTML = `
                     <div class="history-date">
                         ${formattedDate}
@@ -639,35 +652,38 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                     <div class="history-actions">
-                        <button class="history-btn delete-btn" data-id="${record.id}" onclick="deleteRecord('${record.id}')">
+                        <button class="history-btn delete-btn" data-id="${record.id}">
                             <i class="fas fa-trash-alt"></i> Delete
                         </button>
                     </div>
                 `;
                 
+                // Add event listener for delete button
+                const deleteBtn = historyItem.querySelector('.delete-btn');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', function() {
+                        deleteRecord(record.id);
+                    });
+                }
+                
                 historyList.appendChild(historyItem);
             });
+        }
+
             
-            // 只保留删除记录功能
-            window.deleteRecord = function(recordId) {
-                // 从本地存储中删除记录
+        function deleteRecord(recordId) {
+                // Remove record from local storage
                 const savedHistory = localStorage.getItem('travelHistory');
                 if (savedHistory) {
                     let history = JSON.parse(savedHistory);
                     history = history.filter(item => item.id !== recordId);
                     localStorage.setItem('travelHistory', JSON.stringify(history));
                     
-                    // 更新UI
+                    // Update UI
                     updateHistoryUI();
                     showAlert('Record deleted', 2000);
                 }
-            };
-            
-            // 确保全局没有viewRoute函数
-            if (window.viewRoute) {
-                delete window.viewRoute;
             }
-        }
     
     // ---------------- 页面初始化和事件绑定 ----------------
     

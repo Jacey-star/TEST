@@ -215,7 +215,7 @@ body {
     border-left: 4px solid var(--primary-color);
     animation: fadeIn 0.3s ease-in;
     position: relative;
-    padding-bottom: 40px; /* 为底部的按钮留出空间 */
+    padding-bottom: 40px; /* Space for buttons at bottom */
 }
 
 .history-item.success {
@@ -256,18 +256,16 @@ body {
     color: var(--light-text);
 }
 
-
-
-/* 重新定位history-actions容器到右下角 */
+/* Position history-actions container to bottom right */
 .history-actions {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    margin-top: 0; /* 移除原有的上边距 */
-    display: block; /* 改为块级元素 */
+    margin-top: 0;
+    display: block;
 }
 
-/* 调整删除按钮样式 */
+/* Delete button styles */
 .history-btn {
     padding: 5px 10px;
     border: none;
@@ -311,11 +309,6 @@ body {
     padding: 30px 20px;
     color: var(--light-text);
     font-size: 0.95rem;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Alert styles */
@@ -409,12 +402,23 @@ body {
     animation-duration: var(--alert-duration);
 }
 
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
 /* Leaflet popup styles */
 .leaflet-popup-content {
-    min-width: 280px;
+    min-width: 200px;
     max-width: 320px;
     text-align: center;
-    padding: 8px 5px;
+    padding: 10px;
 }
 
 .leaflet-popup-content-wrapper {
@@ -431,7 +435,65 @@ body {
 
 .success-icon {
     display: block;
-    margin: 5px auto;
-    font-size: 24px;
+    margin: 10px auto;
+    font-size: 28px;
     color: white;
+}
+
+/* Completion Modal styles */
+.success-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 40% auto 0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    max-width: 85%;
+    text-align: center;
+    animation: slideIn 0.3s ease;
+    position: relative;
+}
+
+.modal-content h2 {
+    color: #4CAF50;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+#modalFailure h2 {
+    color: #f87c7c;
+}
+
+.modal-content p {
+    margin: 10px 0;
+    color: #333;
+}
+
+.modal-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    margin-top: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 80%;
+    max-width: 200px;
+}
+
+#modalTryAgainBtn {
+    background-color: #2196F3;
 }
