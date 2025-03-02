@@ -1,5 +1,3 @@
-/* Mobile-optimized Green Travel Tracker - CSS */
-
 :root {
     --primary-color: #4CAF50;
     --light-green: #7ed47e;
@@ -497,3 +495,4 @@ body {
 #modalTryAgainBtn {
     background-color: #2196F3;
 }
+

@@ -531,8 +531,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         .setLatLng(userMarker.getLatLng())
                         .setContent(successPopupContent)
                         .openOn(map);
-                } else {
-                    // Use map popup to show failure message
+                } // 修改failure弹窗代码
+                else {
+                    // 失败消息内容
                     const failurePopupContent = `
                         <div style="text-align: center;">
                             <h3 style="margin: 5px 0 10px 0;">Almost There!</h3>
@@ -540,12 +541,27 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <i class="fas fa-exclamation-circle"></i>
                             </div>
                             <p style="margin: 10px 0;">Activity recorded, but distance did not reach 3km. No points earned this time.</p>
-                            <p style="margin: 5px 0; font-size: 0.9rem; color: #666;">Current distance: ${distance.toFixed(1)}km / Target: 3km</p>
+                            <p style="margin: 5px 0; font-size: 0.9rem; color: #fff;">Current distance: ${distance.toFixed(1)}km / Target: 3km</p>
                         </div>
                     `;
                     
-                    // Create a popup at user's current position
-                    L.popup()
+                    // 创建一个自定义样式的弹窗，直接在选项中设置样式
+                    const customPopup = L.popup({
+                        className: 'failure-popup'
+                    });
+                    
+                    // 获取弹窗元素并直接设置样式
+                    customPopup.on('add', function(event) {
+                        // 当弹窗添加到地图上时，直接修改DOM元素样式
+                        setTimeout(() => {
+                            const popupWrapper = document.querySelector('.leaflet-popup-content-wrapper');
+                            const popupTip = document.querySelector('.leaflet-popup-tip');
+                            if (popupWrapper) popupWrapper.style.backgroundColor = '#FFB347';
+                            if (popupTip) popupTip.style.backgroundColor = '#FFB347';
+                        }, 10);
+                    });
+                    
+                    customPopup
                         .setLatLng(userMarker.getLatLng())
                         .setContent(failurePopupContent)
                         .openOn(map);
