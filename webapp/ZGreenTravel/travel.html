@@ -2,11 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>navpage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#4CAF50">
+    <title>Green Travel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css">
     <link rel="stylesheet" href="travel.css">
-    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
-    travel
+    <div class="container">
+        <!-- Map container placed at top -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+        
+        <!-- Tab navigation -->
+        <div class="tab-navigation">
+            <div class="tab active" data-tab="tracking">
+                <i class="fas fa-map-marker-alt"></i> Tracking
+            </div>
+            <div class="tab" data-tab="history">
+                <i class="fas fa-history"></i> History
+            </div>
+        </div>
+        
+        <!-- Tracking panel -->
+        <div class="panel tracking-panel active" id="trackingPanel">
+            <!-- Distance display -->
+            <div class="distance-display">
+                <div>
+                    <span class="distance" id="distanceText">0.0</span>
+                    <span class="distance-target">km / Target 3km</span>
+                </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-value" id="speedValue">0.0</div>
+                    <div class="stat-label">Speed (km/h)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="timeValue">00:00</div>
+                    <div class="stat-label">Time</div>
+                </div>
+            </div>
+            
+            <!-- Action buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-start" id="startBtn">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="btn btn-pause" id="pauseBtn" disabled>
+                    <i class="fas fa-pause"></i> Pause
+                </button>
+                <button class="btn btn-stop" id="stopBtn" disabled>
+                    <i class="fas fa-stop"></i> End
+                </button>
+            </div>
+        </div>
+        
+        <!-- History panel -->
+        <div class="panel history-panel" id="historyPanel">
+            <h2 class="history-title">Activity History</h2>
+            
+            <div class="history-list" id="historyList">
+                <!-- Records will be inserted here dynamically -->
+                <div class="no-records">No travel records yet. Start your green travel journey!</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert" id="alert"></div>
+
+    <!-- Completion modal -->
+    <div class="success-modal" id="completionModal" style="display: none;">
+        <div class="modal-content">
+            <div id="modalSuccess">
+                <h2>Congratulations!</h2>
+                <p>You have completed the green travel challenge and earned 30 points!</p>
+                <button class="modal-btn" id="modalCloseBtn">Continue</button>
+            </div>
+            <div id="modalFailure" style="display: none;">
+                <h2>Activity Recorded</h2>
+                <p>Your activity has been recorded, but the distance did not reach 3km.</p>
+                <p>No points earned this time.</p>
+                <button class="modal-btn" id="modalTryAgainBtn">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="travel.js"></script>
 </body>
+</html>
