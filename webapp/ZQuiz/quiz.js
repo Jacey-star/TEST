@@ -6,6 +6,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // quizpage->navpage
     document.getElementById("back").addEventListener("click", function() {
-        window.history.back();
+        window.location.href = "../navpage2/navpage2.html";
     });
 });

@@ -1,0 +1,337 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: sans-serif;
+    background-color: #ffffff;
+    color: #333;
+}
+.header {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.back-btn {
+    position: absolute;
+    left: 1rem;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #333;
+}
+.back-btn:hover {
+    opacity: 0.8;
+}
+.header h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+
+
+/* ----------------------------------------------------------------------- */
+/* AVATAR 头像 */
+/* Pop up window for changing avatar 更改头像的弹窗 */
+.avatar-modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000da;
+  }
+.avatar-modal-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.avatar-modal-close {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #fff;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+.avatar-modal-avatar {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.avatar-modal-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+/* button */
+.avatar-modal-actions {
+    position: absolute;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.avatar-modal-actions button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: #c97070;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+}
+.success-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+.success-popup-content {
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+/* profile page - Avatar */
+.avatar-bg {
+    position: relative;
+    width: 100%;
+    height: 270px;
+    background: 
+      linear-gradient(to bottom, rgba(0,0,0,0) 80%, rgb(255, 255, 255) 100%),
+      url("../pictures/leaves.jpg") no-repeat center center;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0 0 20px 20px;
+    overflow: hidden;
+}
+.greeting {
+    margin-top: 10px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    -webkit-text-stroke: 1px #000000b8;
+}
+.selected-avatar {
+    width: 100px;
+    height: 100px;
+    border: 3px solid #ffffff63;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.selected-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+
+/* -------------------------------------------------------------------------- */
+/* personal information - 个人信息区域 */
+.profile-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1rem;
+    min-height: calc(100vh - 400px);
+    display: flex;
+    flex-direction: column;
+}
+.container-wrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.info-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 0rem;
+}
+.info-row {
+    display: flex;
+    align-items: center;
+    width: 400px; 
+    margin-bottom: 0rem; 
+    gap: 0rem;  
+}
+.info-row label {
+    width: 120px;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+.info-row input {
+    flex: 1;
+    max-width: 250px;
+    padding: 0.5rem 0.7rem;
+    font-size: 1.1rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    outline: none;
+    margin-right: 0.5rem;
+}
+
+
+
+/* -------------------------------------------------------------------- */
+/* button below (reset password & log out) - 按钮（重置密码和登出） */
+.edit-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #42693a;
+    padding: 0.5rem; 
+    font-size: 1.2rem;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+.actions {
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.action-btn {
+    width: 100%; 
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.change-btn {
+    background-color: #658a65;
+    color: #fff;
+} 
+.logout-btn {
+    background-color: #658a65;
+    color: #fff;
+}
+.accCancel-btn {
+    background-color: #658a65;
+    color: #fff;
+}
+
+/* 确认弹窗 */
+.confirm-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+.confirm-modal-content {
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    font-size: 18px;
+    color: #333;
+    max-width: 350px;
+    text-align: center;
+}
+.confirm-modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.confirm-modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.confirm-btn {
+    background-color: #658a65;
+    color: #fff;
+}
+.cancel-btn {
+    background-color: #d7d7d7;
+    color: #000000;
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Adapt to different screens - 屏幕变化调整 */
+@media (max-width: 480px) {
+    .info-row {
+      display: grid;
+      grid-template-rows: auto auto;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      justify-items: center;
+      width: 100%;
+      max-width: 400px;
+      margin: 0.7rem auto;
+    }
+    .info-row label {
+      grid-row: 1 / 2;
+      grid-column: 1 / span 2;
+      width: 100%;
+      text-align: left;
+      font-size: 1rem;
+    }
+    .info-row input {
+      grid-row: 2;
+      grid-column: 1;
+      width: 100%;
+      max-width: 300px;
+      font-size: 1rem;
+    }
+    .info-row .edit-btn {
+      grid-row: 2;
+      grid-column: 2;
+      font-size: 1rem;
+    }
+  }
+  
+  
+  

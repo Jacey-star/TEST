@@ -5,7 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>profile</title>
     <link rel="stylesheet" href="profile.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
-This is profile page. 
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">
+        <i class="fa fa-arrow-left"></i> BACK
+        </button>
+        <h1>Profile</h1>
+    </header>
+  
+    <div class="avatar-bg">
+        <div class="selected-avatar" onclick="openModal()">
+        <img id="current-avatar" src="../pictures/bird.jpg" alt="current avatar" />
+        </div>
+        <p class="greeting">Hi, <span id="display-username"></span>!</p>
+        <input type="file" id="avatar-upload" accept="image/*" onchange="uploadAvatar(event)" style="display:none"/>
+    </div>
+
+    <!-- upload new avatar -->
+    <div id="avatar-modal" class="avatar-modal">
+        <div class="avatar-modal-content">
+            <button class="avatar-modal-close" onclick="closeModal()">
+                <i class="fa fa-times"></i>
+            </button>
+            <div class="avatar-modal-avatar">
+                <img id="modal-avatar" src="../pictures/bird.jpg" alt="Avatar">
+            </div>
+            <div class="avatar-modal-actions">
+                <button onclick="document.getElementById('avatar-upload').click()">Upload New Avatar</button>
+            </div>
+        </div>
+    </div>
+    <div id="success-popup" class="success-popup">
+        <div class="success-popup-content">
+            Success!
+        </div>
+    </div>
+    
+
+    <main class="profile-container">
+        <div class="info-section">
+            <div class="info-row">
+                <label for="username">Username</label>
+                <input id="username" type="text" value="JohnDoe" disabled/>
+                <button class="edit-btn" onclick="toggleEdit('username', this)">
+                    <i class="fa fa-pencil-square-o"></i>
+                </button>
+            </div>
+            <div class="info-row">
+                <label for="email">Email</label>
+                <input id="email" type="email" value="john@example.com" disabled/>
+                <button class="edit-btn" onclick="toggleEdit('email', this)">
+                    <i class="fa fa-pencil-square-o"></i>
+                </button>
+            </div>
+            <div class="info-row">
+                <label for="firstName">First Name</label>
+                <input id="firstName" type="text" value="John" disabled/>
+                <button class="edit-btn" onclick="toggleEdit('firstName', this)">
+                    <i class="fa fa-pencil-square-o"></i>
+                </button>
+            </div>
+            <div class="info-row">
+                <label for="lastName">Last Name</label>
+                <input id="lastName" type="text" value="Doe" disabled/>
+                <button class="edit-btn" onclick="toggleEdit('lastName', this)">
+                    <i class="fa fa-pencil-square-o"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="action-btn change-btn" onclick="changePassword()">
+                <i class="fa fa-lock"></i> Set New Password
+            </button>
+            <button class="action-btn logout-btn" onclick="logout()">
+                <i class="fa fa-sign-out"></i> Log out
+            </button>
+            <button class="action-btn accCancel-btn" onclick="deleteAccount()">
+                <i class="fa fa-trash"></i> Account Cancellation
+            </button>
+        </div>
+    </main>
+    <!-- confirm popup window -->
+    <!-- 确认弹窗 -->
+    <div id="confirm-modal" class="confirm-modal">
+        <div class="confirm-modal-content">
+          <p id="confirm-message">Confirm operation? </p>
+          <div class="confirm-modal-actions">
+            <button id="confirm-cancel-btn" class="action-btn cancel-btn">Cancel</button>
+            <button id="confirm-ok-btn" class="action-btn confirm-btn">Confirm</button>
+          </div>
+        </div>
+      </div>
+
+    <script src="profile.js"></script>
 </body>
+</html>

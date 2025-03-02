@@ -125,21 +125,27 @@ html, body{
 }
 /* 头像 */
 /*avatar action key*/
+/* 更改------------------------------------------------------ */
 .avatar-link {
     display: none;
-
     position: absolute;
     top: 20%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 120px;
-    height: 120px;
+    width: 100px;  /* 修改为 100px */
+    height: 100px; /* 修改为 100px */
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid #fff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     transition: opacity 0.3s ease-in-out;
 }
+.avatar-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 使用 contain 确保完整显示图片 */
+}
+/* ----------------------------------------------------------- */
 /* disappear when zoom out (avatar) */
 .item.active .avatar-link {
     display: block;
