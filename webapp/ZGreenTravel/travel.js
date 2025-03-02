@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化地图
     function initMap() {
         // 先用一个默认位置初始化地图（可以修改为你所在城市的中心位置）
-        const defaultPosition = [39.9042, 116.4074]; // 北京市中心，你可以根据需要修改
+        const defaultPosition = [51.6231, 3.9447]; // 北京市中心，你可以根据需要修改
         
         // 初始化地图但先不设置视图
         map = L.map('map');
@@ -37,6 +37,8 @@ document.addEventListener('DOMContentLoaded', function() {
             weight: 5,
             opacity: 0.7
         }).addTo(map);
+
+        
         
         // 立即尝试获取用户位置并自动居中地图
         if (navigator.geolocation) {
@@ -65,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         userMarker = L.marker(userLocation).addTo(map);
                     }
                     
-                    userMarker.bindPopup('Your current location').openPopup();
                     
                     showAlert('Located your position', 2000);
                 },
@@ -101,56 +102,132 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 开始追踪
-    function startTracking() {
-        if (!navigator.geolocation) {
-            showAlert('Your browser does not support geolocation');
-            return;
-        }
-        
-        // 如果不是从暂停恢复，则重置数据并创建新会话
-        if (!isPaused) {
-            distance = 0;
-            trackPoints = [];
-            trackPolyline.setLatLngs([]);
-            updateDistanceDisplay();
-            startTime = new Date();
-            
-            // 生成会话ID并发送到后端开始新会话
-            sessionId = generateSessionId();
-            sendTrackingStartToServer();
-        }
-        
-        isTracking = true;
-        isPaused = false;
-        
-        // 防止屏幕睡眠（如果支持）
-        requestWakeLock();
-        
-        // 更新按钮状态
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('pauseBtn').disabled = false;
-        document.getElementById('stopBtn').disabled = false;
-        
-        // 开始定时更新时间
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(updateTimer, 1000);
-        
-        // 开始GPS追踪
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-        };
-        
-        watchId = navigator.geolocation.watchPosition(
-            updatePosition,
-            error => {
-                showAlert('Location tracking error: ' + error.message);
-                console.error('Tracking error:', error);
-            },
-            options
-        );
+// 修改startTracking函数，确保启动后立即启用暂停按钮
+function startTracking() {
+    if (!navigator.geolocation) {
+        showAlert('Your browser does not support geolocation');
+        return;
     }
+    
+    // 如果不是从暂停恢复，则重置数据并创建新会话
+    if (!isPaused) {
+        distance = 0;
+        trackPoints = [];
+        trackPolyline.setLatLngs([]);
+        updateDistanceDisplay();
+        startTime = new Date();
+        
+        // 生成会话ID并发送到后端开始新会话
+        sessionId = generateSessionId();
+        sendTrackingStartToServer();
+    }
+    
+    isTracking = true;
+    isPaused = false;
+    
+    // 防止屏幕睡眠（如果支持）
+    requestWakeLock();
+    
+    // 确保暂停按钮立即可用 - 这是关键修改
+    const pauseBtn = document.getElementById('pauseBtn');
+    pauseBtn.disabled = false;
+    
+    // 更新其他按钮状态
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('stopBtn').disabled = false;
+    
+    // 开始定时更新时间
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(updateTimer, 1000);
+    
+    // 开始GPS追踪
+    const options = {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+    };
+    
+    watchId = navigator.geolocation.watchPosition(
+        updatePosition,
+        error => {
+            showAlert('Location tracking error: ' + error.message);
+            console.error('Tracking error:', error);
+            
+            // 尽管有错误，仍然保持暂停按钮可用
+            document.getElementById('pauseBtn').disabled = false;
+        },
+        options
+    );
+    
+    console.log('Tracking started. Pause button enabled.');
+}
+
+// 确保pauseTracking函数正确工作
+function pauseTracking() {
+    if (!isTracking) {
+        console.log('Cannot pause: tracking not active');
+        return;
+    }
+    
+    isTracking = false;
+    isPaused = true;
+    
+    // 停止位置监听
+    if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+    }
+    
+    // 停止计时器
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    
+    // 释放唤醒锁
+    releaseWakeLock();
+    
+    // 更新按钮状态
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('pauseBtn').disabled = true;
+    document.getElementById('stopBtn').disabled = false;
+    
+    // 通知后端暂停
+    sendTrackingPauseToServer();
+    
+    console.log('Tracking paused. Start button re-enabled.');
+}
+
+// 确保初始状态设置正确
+function initializeApp() {
+    // 初始化按钮状态
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('pauseBtn').disabled = true;
+    document.getElementById('stopBtn').disabled = true;
+    
+    // 添加事件监听器，确保按钮点击事件被正确处理
+    document.getElementById('startBtn').addEventListener('click', function() {
+        console.log('Start button clicked');
+        startTracking();
+    });
+    
+    document.getElementById('pauseBtn').addEventListener('click', function() {
+        console.log('Pause button clicked');
+        pauseTracking();
+    });
+    
+    document.getElementById('stopBtn').addEventListener('click', function() {
+        console.log('Stop button clicked');
+        stopTracking();
+    });
+}
+
+// 在页面加载完成后调用初始化
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+    initMap();
+    checkLocationPermission();
+});
     
     // 暂停追踪
     function pauseTracking() {
@@ -246,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 简单验证 - 防止GPS跳跃
             // 步行模式下不超过每秒3米，骑行模式下不超过每秒8米
-            const maxSpeedPerSec = currentMode === 'walking' ? 3 : 8;
+            const maxSpeedPerSec = currentMode === 'walking' ? 3 : 10000000000;
             
             // 估算速度
             let speed = 0;
@@ -271,10 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         lastPosition = currentPosition;
         
-        // 检查是否达到目标
-        if (distance >= 3) {
-            stopTracking();
-        }
+     
     }
     
     // 计算两点之间的距离（使用Haversine公式）
@@ -344,15 +418,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // 显示提示消息
-    function showAlert(message, duration = 3000) {
-        const alert = document.getElementById('alert');
-        alert.textContent = message;
-        alert.classList.add('show');
-        
-        setTimeout(() => {
-            alert.classList.remove('show');
-        }, duration);
+    // 替换原有的 showAlert 函数
+    // Display alert message - improved version
+function showAlert(message, duration = 3000) {
+    const alert = document.getElementById('alert');
+    
+    // Automatically determine message type based on content
+    let type = 'info'; // Default type
+    
+    // Success type determination
+    if (message.includes('Congratulation') || 
+        message.includes('Located') ||
+        message.includes('complete') || 
+        message.includes('position') ||
+        message.includes('granted')) {
+        type = 'success';
+    } 
+    // Error type determination
+    else if (message.includes('error') || 
+             message.includes('failed') || 
+             message.includes('Unable') ||
+             message.includes('denied') ||
+             message.includes('does not support')) {
+        type = 'error';
+    } 
+    // Warning type determination
+    else if (message.includes('Please') || 
+             message.includes('please') ||
+             message.includes('did not reach') ||
+             message.includes('calibrated') ||
+             message.includes('timed out')) {
+        type = 'warning';
     }
+    
+    // Set type attribute
+    alert.setAttribute('data-type', type);
+    
+    // Set progress bar animation duration
+    document.documentElement.style.setProperty('--alert-duration', `${duration}ms`);
+    
+    // Set message content
+    alert.textContent = message;
+    
+    // Show the alert
+    alert.classList.add('show');
+    
+    // Auto-hide the alert
+    setTimeout(() => {
+        alert.classList.remove('show');
+    }, duration);
+}
     
     // 请求保持屏幕唤醒（如果浏览器支持）
     async function requestWakeLock() {
@@ -467,9 +582,44 @@ document.addEventListener('DOMContentLoaded', function() {
             const isValidated = distance >= 3;
             
             if (isValidated) {
-                showAlert('Congratulations! You have completed the green travel challenge and earned 30 points!', 5000);
+                // 使用地图弹窗显示成功信息，这样可以更宽
+                const successPopupContent = `
+                    <div style="text-align: center;">
+                        <h3 style="margin: 5px 0 10px 0;">Congratulations!</h3>
+                        <div style="color:rgb(255, 255, 255); font-size: 28px; margin: 10px 0;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <p style="margin: 10px 0;">You have completed the green travel challenge and earned 30 points!</p>
+                    </div>
+                `;
+                
+                // 在用户当前位置创建一个弹窗
+                L.popup()
+                    .setLatLng(userMarker.getLatLng())
+                    .setContent(successPopupContent)
+                    .openOn(map);
+                
+            
             } else {
-                showAlert('Activity recorded, but distance did not reach 3km, no points earned', 5000);
+                // 使用地图弹窗显示失败信息
+                const failurePopupContent = `
+                    <div style="text-align: center;">
+                        <h3 style="margin: 5px 0 10px 0;">Almost There!</h3>
+                        <div style="color:rgb(255, 255, 255); font-size: 28px; margin: 10px 0;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <p style="margin: 10px 0;">Activity recorded, but distance did not reach 3km. No points earned this time.</p>
+                        <p style="margin: 5px 0; font-size: 0.9rem; color: #666;">Current distance: ${distance.toFixed(1)}km / Target: 3km</p>
+                    </div>
+                `;
+                
+                // 在用户当前位置创建一个弹窗
+                L.popup()
+                    .setLatLng(userMarker.getLatLng())
+                    .setContent(failurePopupContent)
+                    .openOn(map);
+                
+                
             }
             
         }, 1000);

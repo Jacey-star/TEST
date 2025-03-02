@@ -172,29 +172,131 @@ body {
     cursor: not-allowed;
 }
 
-/* Alert box */
+
+
+/* 改进的弹窗样式 */
 .alert {
     position: fixed;
-    bottom: 20px;
+    top: 20px;  /* 将弹窗放在顶部而非底部 */
     left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(51, 51, 51, 0.9);
+    transform: translateX(-50%) translateY(-100%);
+    background-color: var(--primary-color);
     color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 0.9rem;
+    padding: 12px 20px;
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    font-weight: 500;
     z-index: 1000;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    max-width: 85%;
+    text-align: center;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    border-left: 4px solid rgba(255, 255, 255, 0.5);
+}
+
+.alert::before {
+    content: '\f05a';  /* 默认使用信息图标 */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-right: 10px;
+    font-size: 1.2rem;
 }
 
 .alert.show {
     opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
-/* Media query - safe area adaptation */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-    .control-panel {
-        padding-bottom: calc(15px + env(safe-area-inset-bottom));
-    }
+/* 自动添加图标和颜色变化 */
+.alert[data-type="success"] {
+    background-color: var(--primary-color);
+    border-left-color: var(--light-green);
+}
+
+.alert[data-type="success"]::before {
+    content: '\f058';  /* 成功图标 */
+    color: var(--light-green);
+}
+
+.alert[data-type="error"] {
+    background-color: #e53935;
+    border-left-color: #ffcdd2;
+}
+
+.alert[data-type="error"]::before {
+    content: '\f057';  /* 错误图标 */
+    color: #ffcdd2;
+}
+
+.alert[data-type="warning"] {
+    background-color: #ff9800;
+    border-left-color: #ffe0b2;
+}
+
+.alert[data-type="warning"]::before {
+    content: '\f071';  /* 警告图标 */
+    color: #ffe0b2;
+}
+
+/* 添加进度条 */
+.alert::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    transform-origin: left;
+    animation: alertProgress linear forwards;
+}
+
+@keyframes alertProgress {
+    0% { transform: scaleX(1); }
+    100% { transform: scaleX(0); }
+}
+
+/* 为进度条设置动画持续时间的变量 */
+:root {
+    --alert-duration: 3000ms;
+}
+
+.alert::after {
+    animation-duration: var(--alert-duration);
+}
+
+
+/* 添加到travel.css文件中 */
+
+/* 扩展成功消息弹窗的宽度 */
+.leaflet-popup-content {
+    min-width: 280px; /* 增加最小宽度 */
+    max-width: 320px; /* 设置最大宽度 */
+    text-align: center; /* 文本居中 */
+    padding: 8px 5px; /* 稍微调整内边距 */
+}
+
+/* 调整弹窗样式 */
+.leaflet-popup-content-wrapper {
+    background-color: var(--primary-color); /* 使用主题绿色 */
+    color: white; /* 白色文本 */
+    border-radius: 8px; /* 圆角 */
+    font-weight: 500; /* 稍微加粗字体 */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+}
+
+/* 移除弹窗尖角部分的背景色，使其与弹窗保持一致 */
+.leaflet-popup-tip {
+    background-color: var(--primary-color);
+}
+
+/* 调整成功图标样式 */
+.success-icon {
+    display: block;
+    margin: 5px auto;
+    font-size: 24px;
+    color: white;
 }
