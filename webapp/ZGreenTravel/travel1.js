@@ -13,11 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let wakeLock = null;
     
     // API 
-    const API_BASE_URL = '/walkinggame'; // 使用相对URL，路径前缀为walkinggame
+    const API_BASE_URL = '/walkinggame';
     const API_ENDPOINTS = {
-        SAVE_TRIP: '/walkinggame/save/',
-        GET_TRIPS: '/walkinggame/history/',
-        DELETE_TRIP: '/walkinggame/delete/', // + tripId
+        SAVE_TRIP: '/save/',
+        GET_TRIPS: '/history/',
+        DELETE_TRIP: '/delete/',
         GET_USER_INFO: '/user/info/'
     };
 
@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function getCSRFToken() {
         return document.querySelector('[name=csrfmiddlewaretoken]').value;
     }
+    
+
     
 /******************* PART 1 : NEED TO CONNECT WITH THE BACKEND ************************/
     
@@ -88,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
    //get history from backend
-    async function getTripsFromBackend() {
+   async function getTripsFromBackend() {
         try {
             const response = await fetch(API_BASE_URL + API_ENDPOINTS.GET_TRIPS, {
                 method: 'GET',
@@ -100,7 +102,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const historyList = document.getElementById('historyList');
                 historyList.innerHTML = htmlContent;
-                return true; 
+                return null; 
+                
+        
             } else {
                 console.error('Failed to load history:', response.status);
                 return null;
@@ -110,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return null;
         }
     }
-
 
     /**
      * delete history
@@ -373,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
         //     // 释放唤醒锁
         //     releaseWakeLock();
-        // }
+        }
         
         isTracking = false;
         isPaused = false;
@@ -605,26 +608,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Format duration
-    function formatDuration(milliseconds) {
-        const totalSeconds = Math.floor(milliseconds / 1000);
-        const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
-        const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-        return `${minutes}:${seconds}`;
-    }
-    
-    
     // update history UI
     async function updateHistoryUI() {
         try {
             const backendHistory = await getTripsFromBackend();
             
-            if (backendHistory && Array.isArray(backendHistory)) {
-                displayHistory(backendHistory);
-            } else {
-                const historyList = document.getElementById('historyList');
-                historyList.innerHTML = '<div class="no-records">No travel records yet. Start your green travel journey!</div>';
+            // 如果getTripsFromBackend直接操作DOM并返回null/true
+            if (backendHistory === null) {
+                // DOM已经在getTripsFromBackend中更新，无需额外操作
+                return;
             }
+        
         } catch (error) {
             console.error('Error updating history UI:', error);
             const historyList = document.getElementById('historyList');
@@ -657,7 +651,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-    
+
     // Initialize app
     function initApp() {
         // Initialize map
