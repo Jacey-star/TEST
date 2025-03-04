@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let sessionId = null;
     let wakeLock = null;
     
-    // ----- 新增：Django后端API配置 -----
+    // API 
     const API_BASE_URL = '/walkinggame'; // 使用相对URL，路径前缀为walkinggame
     const API_ENDPOINTS = {
         SAVE_TRIP: '/walkinggame/save/',
@@ -21,15 +21,16 @@ document.addEventListener('DOMContentLoaded', function() {
         GET_USER_INFO: '/user/info/'
     };
 
-    // ----- 新增：CSRF令牌处理 -----
+    // CSRF
     function getCSRFToken() {
         return document.querySelector('[name=csrfmiddlewaretoken]').value;
     }
     
-    // ----- 新增：后端交互函数 -----
+/******************* PART 1 : NEED TO CONNECT WITH THE BACKEND ************************/
     
+
     /**
-     * 发送旅行数据到Django后端
+     * send walking data to backend
      * @param {Object} tripData 
      */
     async function sendTripDataToBackend(tripData) {
@@ -45,11 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('is_completed', tripData.isCompleted);
             formData.append('points_earned', tripData.pointsEarned);
             
-            // 轨迹点数据需要特殊处理，因为它是一个数组
-            // 对于Django，我们可以传递一个字符串，然后在服务器端解析
             formData.append('track_points_count', trackPoints.length);
             
-            // 每个轨迹点分别添加
             trackPoints.forEach((point, index) => {
                 formData.append(`point_lat_${index}`, point.lat);
                 formData.append(`point_lng_${index}`, point.lng);
@@ -60,10 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': getCSRFToken(),
-                    // 不设置Content-Type，让浏览器自动处理multipart/form-data
                 },
                 body: formData,
-                // 包含凭据（cookies）以便Django识别用户
                 credentials: 'same-origin'
             });
             
@@ -71,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const responseText = await response.text();
                 showAlert('Trip data saved to server successfully');
                 
-                // 尝试解析响应文本（如果服务器返回了信息）
+    
                 try {
                     return responseText ? JSON.parse(responseText) : null;
                 } catch (e) {
@@ -80,19 +76,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else {
                 console.error('Server error:', response.status);
-                showAlert('Failed to send data to server, saved locally');
+                showAlert('Failed to send data to server');
                 return null;
             }
         } catch (error) {
             console.error('Error sending data:', error);
-            showAlert('Connection error, data saved locally');
+            showAlert('Connection error, please try again');
             return null;
         }
     }
 
-    /**
-     * 从Django后端获取旅行历史
-     */
+
+   //get history from backend
     async function getTripsFromBackend() {
         try {
             const response = await fetch(API_BASE_URL + API_ENDPOINTS.GET_TRIPS, {
@@ -101,13 +96,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             if (response.ok) {
-                // 直接获取HTML文本
                 const htmlContent = await response.text();
                 
-                // 替换历史列表内容
                 const historyList = document.getElementById('historyList');
                 historyList.innerHTML = htmlContent;
-                return true; // 成功标志
+                return true; 
             } else {
                 console.error('Failed to load history:', response.status);
                 return null;
@@ -118,23 +111,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+
     /**
-     * 从Django后端删除旅行记录
-     * @param {string} tripId 要删除的旅行ID
+     * delete history
+     * @param {string} tripId 
      */
     async function deleteTripFromBackend(tripId) {
         try {
-            // 创建FormData对象（适合Django处理）
             const formData = new FormData();
             formData.append('trip_id', tripId);
             
             const response = await fetch(API_BASE_URL + API_ENDPOINTS.DELETE_TRIP, {
-                method: 'POST', // Django通常使用POST进行删除操作
+                method: 'POST', 
                 headers: {
                     'X-CSRFToken': getCSRFToken()
                 },
                 body: formData,
-                credentials: 'same-origin' // 包含凭据
+                credentials: 'same-origin' 
             });
             
             if (response.ok) {
@@ -152,10 +145,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // ----- 新增：显示后端历史记录函数 -----
+   
     /**
-     * 显示从后端获取的历史记录
-     * @param {Array} history 后端历史记录数组
+     * display history
+     * @param {Array} history 
      */
     function displayHistory(history) {
         const historyList = document.getElementById('historyList');
@@ -166,9 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // 显示每条记录 - 注意字段名可能与Django模型不同
         history.forEach(record => {
-            // 将Django字段名转换为前端字段名
             const item = {
                 id: record.id || record.session_id,
                 date: record.date || record.created_at,
@@ -212,14 +203,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             
-            // 添加删除按钮事件监听器
             const deleteBtn = historyItem.querySelector('.delete-btn');
             if (deleteBtn) {
                 deleteBtn.addEventListener('click', async function() {
-                    // 尝试从后端删除
                     const success = await deleteTripFromBackend(item.id);
                     if (success) {
-                        // 重新加载历史记录
                         updateHistoryUI();
                     }
                 });
@@ -229,80 +217,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ----- 新增：显示本地历史记录函数 -----
-    /**
-     * 显示本地存储的历史记录
-     * @param {Array} history 本地历史记录数组
-     */
-    function displayLocalHistory(history) {
-        const historyList = document.getElementById('historyList');
-        historyList.innerHTML = '';
-        
-        if (!history || history.length === 0) {
-            historyList.innerHTML = '<div class="no-records">No travel records yet. Start your green travel journey!</div>';
-            return;
-        }
-        
-        history.forEach(record => {
-            const date = new Date(record.date);
-            const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-            
-            const historyItem = document.createElement('div');
-            historyItem.className = `history-item ${record.isCompleted ? 'success' : 'incomplete'}`;
-            
-            historyItem.innerHTML = `
-                <div class="history-date">
-                    ${formattedDate}
-                    <span class="history-status ${record.isCompleted ? 'status-complete' : 'status-incomplete'}">
-                        ${record.isCompleted ? 'Completed' : 'Incomplete'}
-                    </span>
-                </div>
-                <div class="history-stats">
-                    <div class="history-stat">
-                        <div class="history-stat-value">${record.distance} km</div>
-                        <div class="history-stat-label">Distance</div>
-                    </div>
-                    <div class="history-stat">
-                        <div class="history-stat-value">${record.duration}</div>
-                        <div class="history-stat-label">Duration</div>
-                    </div>
-                    <div class="history-stat">
-                        <div class="history-stat-value">${record.pointsEarned}</div>
-                        <div class="history-stat-label">Points</div>
-                    </div>
-                </div>
-                <div class="history-actions">
-                    <button class="history-btn delete-btn" data-id="${record.id}">
-                        <i class="fas fa-trash-alt"></i> Delete
-                    </button>
-                </div>
-            `;
-            
-            // 添加删除按钮事件监听器
-            const deleteBtn = historyItem.querySelector('.delete-btn');
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', function() {
-                    deleteRecord(record.id);
-                });
-            }
-            
-            historyList.appendChild(historyItem);
-        });
-    }
-    
+
+
+
+    /******************************** PART 2: MAP and TRACKING ******************************/
     // Initialize map
     function initMap() {
         const defaultPosition = [51.6231, 3.9447];
-        
-        // Initialize map
+
         map = L.map('map');
-        
-        // Add map layer
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
         
-        // Create route layer
         trackPolyline = L.polyline([], {
             color: '#4CAF50',
             weight: 5,
@@ -335,26 +263,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 请求保持屏幕唤醒（如果浏览器支持）
-    async function requestWakeLock() {
-        if ('wakeLock' in navigator) {
-            try {
-                wakeLock = await navigator.wakeLock.request('screen');
-            } catch (err) {
-                console.error('Wake Lock error:', err);
-            }
-        }
-    }
+    //delete??
+    // 请求保持屏幕唤醒
+    // async function requestWakeLock() {
+    //     if ('wakeLock' in navigator) {
+    //         try {
+    //             wakeLock = await navigator.wakeLock.request('screen');
+    //         } catch (err) {
+    //             console.error('Wake Lock error:', err);
+    //         }
+    //     }
+    // }
     
-    // 释放屏幕唤醒锁
-    function releaseWakeLock() {
-        if (wakeLock !== null) {
-            wakeLock.release()
-              .then(() => {
-                wakeLock = null;
-              });
-        }
-    }
+    // // 释放屏幕唤醒锁
+    // function releaseWakeLock() {
+    //     if (wakeLock !== null) {
+    //         wakeLock.release()
+    //           .then(() => {
+    //             wakeLock = null;
+    //           });
+    //     }
+    // }
     
     // Start tracking
     function startTracking() {
@@ -376,8 +305,8 @@ document.addEventListener('DOMContentLoaded', function() {
         isTracking = true;
         isPaused = false;
         
-        // 防止屏幕睡眠（如果支持）
-        requestWakeLock();
+        // // 防止屏幕睡眠（如果支持）
+        // requestWakeLock();
         
         // Update button states
         document.getElementById('startBtn').disabled = true;
@@ -418,8 +347,8 @@ document.addEventListener('DOMContentLoaded', function() {
             timerInterval = null;
         }
         
-        // 释放唤醒锁
-        releaseWakeLock();
+        // // 释放唤醒锁
+        // releaseWakeLock();
         
         // Update button states
         document.getElementById('startBtn').disabled = false;
@@ -427,57 +356,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('stopBtn').disabled = false;
     }
     
-    // ----- 修改：End tracking -----
-    /* 原始代码
-    function stopTracking() {
-        // If tracking, stop first
-        if (isTracking) {
-            if (watchId !== null) {
-                navigator.geolocation.clearWatch(watchId);
-                watchId = null;
-            }
-            
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-            
-            // 释放唤醒锁
-            releaseWakeLock();
-        }
-        
-        isTracking = false;
-        isPaused = false;
-        
-        // Update button states
-        document.getElementById('startBtn').disabled = false;
-        document.getElementById('pauseBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = true;
-        
-        // Collect trip data
-        const tripData = {
-            sessionId: sessionId,
-            startTime: startTime,
-            endTime: new Date(),
-            distance: distance,
-            duration: startTime ? (new Date() - startTime) : 0,
-            isCompleted: distance >= 3,
-            pointsEarned: distance >= 3 ? 30 : 0
-        };
-        
-        // Save to history
-        saveToHistory(tripData);
-        
-        // Show completion status
-        if (distance >= 3) {
-            showCompletionSuccess();
-        } else {
-            showCompletionFailure();
-        }
-    }
-    */
     
-    // 新版停止追踪功能
+   
     async function stopTracking() {
         // If tracking, stop first
         if (isTracking) {
@@ -491,9 +371,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 timerInterval = null;
             }
             
-            // 释放唤醒锁
-            releaseWakeLock();
-        }
+        //     // 释放唤醒锁
+        //     releaseWakeLock();
+        // }
         
         isTracking = false;
         isPaused = false;
@@ -513,16 +393,15 @@ document.addEventListener('DOMContentLoaded', function() {
             isCompleted: distance >= 3,
             pointsEarned: distance >= 3 ? 30 : 0
         };
-        
-        // 保存到本地历史记录
-        saveToHistory(tripData);
-        
-        // 尝试发送到后端
-        sendTripDataToBackend(tripData).catch(err => {
+
+        try {
+            await sendTripDataToBackend(tripData);
+            updateHistoryUI(); 
+        } catch (err) {
             console.error('Backend sync failed:', err);
-        });
+            showAlert('Failed to save your activity');
+        }
         
-        // 显示完成状态
         if (distance >= 3) {
             showCompletionSuccess();
         } else {
@@ -560,11 +439,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentPosition[0], currentPosition[1]
             );
             
-            // Add to total distance (convert to km)
             distance += segmentDistance / 1000;
             updateDistanceDisplay();
-            
-            // Update speed display
             updateSpeedDisplay(position.coords.speed);
         }
         
@@ -588,12 +464,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return degrees * Math.PI / 180;
     }
     
-    // Update distance display
     function updateDistanceDisplay() {
         document.getElementById('distanceText').textContent = distance.toFixed(1);
     }
-    
-    // Update speed display
+
     function updateSpeedDisplay(speed) {
         let displaySpeed = 0;
         
@@ -620,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const alert = document.getElementById('alert');
         
         // Automatically determine message type based on content
-        let type = 'info'; // Default type
+        let type = 'info'; 
         
         // Success type determination
         if (message.includes('Congratulation') || 
@@ -655,8 +529,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Set message content
         alert.textContent = message;
-        
-        // Show the alert
+
         alert.classList.add('show');
         
         // Auto-hide the alert
@@ -665,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, duration);
     }
     
-    // Show completion success
+    // Show completion success (color: green)
     function showCompletionSuccess() {
         const successPopupContent = `
             <div style="text-align: center;">
@@ -683,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .openOn(map);
     }
     
-    // Show completion failure
+    // Show completion failure (color: orange)
     function showCompletionFailure() {
         const failurePopupContent = `
             <div style="text-align: center;">
@@ -696,14 +569,12 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
-        // 创建一个自定义样式的弹窗
+       
         const customPopup = L.popup({
             className: 'failure-popup'
         });
         
-        // 获取弹窗元素并直接设置样式
         customPopup.on('add', function(event) {
-            // 当弹窗添加到地图上时，直接修改DOM元素样式
             setTimeout(() => {
                 const popupWrapper = document.querySelector('.leaflet-popup-content-wrapper');
                 const popupTip = document.querySelector('.leaflet-popup-tip');
@@ -718,45 +589,20 @@ document.addEventListener('DOMContentLoaded', function() {
             .openOn(map);
     }
     
+
+
+/************************** PART 3: HISTORY UI (use the functions in part1) *******************************/
+
     // Save to history
-    function saveToHistory(tripData) {
-        let history = [];
-        const savedHistory = localStorage.getItem('travelHistory');
-        
-        if (savedHistory) {
-            try {
-                history = JSON.parse(savedHistory);
-            } catch (e) {
-                console.error('Error parsing saved history', e);
-                history = [];
-            }
-        }
-        
-        // Add new record
-        history.unshift({
-            id: tripData.sessionId,
-            date: new Date().toISOString(),
-            distance: tripData.distance.toFixed(1),
-            duration: formatDuration(tripData.duration),
-            isCompleted: tripData.isCompleted,
-            pointsEarned: tripData.pointsEarned
-        });
-        
-        // Keep only most recent 20 records
-        if (history.length > 20) {
-            history = history.slice(0, 20);
-        }
-        
-        // Save to local storage
+    async function saveToHistory(tripData) {
+  
         try {
-            localStorage.setItem('travelHistory', JSON.stringify(history));
-        } catch (e) {
-            console.error('Error saving history:', e);
-            showAlert('Failed to save history');
+            await sendTripDataToBackend(tripData);
+            updateHistoryUI();
+        } catch (error) {
+            console.error('Error saving to backend:', error);
+            showAlert('Failed to save your activity');
         }
-        
-        // Update history UI
-        updateHistoryUI();
     }
     
     // Format duration
@@ -767,131 +613,50 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${minutes}:${seconds}`;
     }
     
-    // ----- 修改：Update history UI -----
-    /* 原始代码
-    function updateHistoryUI() {
-        const historyList = document.getElementById('historyList');
-        const savedHistory = localStorage.getItem('travelHistory');
-        
-        // Clear current list
-        historyList.innerHTML = '';
-        
-        if (!savedHistory || JSON.parse(savedHistory).length === 0) {
-            historyList.innerHTML = '<div class="no-records">No travel records yet. Start your green travel journey!</div>';
-            return;
-        }
-        
-        // Add each history record
-        const history = JSON.parse(savedHistory);
-        
-        history.forEach(record => {
-            const date = new Date(record.date);
-            const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-            
-            const historyItem = document.createElement('div');
-            historyItem.className = `history-item ${record.isCompleted ? 'success' : 'incomplete'}`;
-            
-            historyItem.innerHTML = `
-                <div class="history-date">
-                    ${formattedDate}
-                    <span class="history-status ${record.isCompleted ? 'status-complete' : 'status-incomplete'}">
-                        ${record.isCompleted ? 'Completed' : 'Incomplete'}
-                    </span>
-                </div>
-                <div class="history-stats">
-                    <div class="history-stat">
-                        <div class="history-stat-value">${record.distance} km</div>
-                        <div class="history-stat-label">Distance</div>
-                    </div>
-                    <div class="history-stat">
-                        <div class="history-stat-value">${record.duration}</div>
-                        <div class="history-stat-label">Duration</div>
-                    </div>
-                    <div class="history-stat">
-                        <div class="history-stat-value">${record.pointsEarned}</div>
-                        <div class="history-stat-label">Points</div>
-                    </div>
-                </div>
-                <div class="history-actions">
-                    <button class="history-btn delete-btn" data-id="${record.id}">
-                        <i class="fas fa-trash-alt"></i> Delete
-                    </button>
-                </div>
-            `;
-            
-            // Add event listener for delete button
-            const deleteBtn = historyItem.querySelector('.delete-btn');
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', function() {
-                    deleteRecord(record.id);
-                });
-            }
-            
-            historyList.appendChild(historyItem);
-        });
-    }
-    */
     
-    //
-    // 新版历史记录更新功能
+    // update history UI
     async function updateHistoryUI() {
-        // 尝试从后端获取历史
-        const backendHistory = await getTripsFromBackend().catch(err => null);
-        
-        // 如果有后端数据，显示后端数据
-        if (backendHistory && Array.isArray(backendHistory)) {
-            displayHistory(backendHistory);
-            return;
-        }
-        
-        // 否则回退到显示本地数据
-        const savedHistory = localStorage.getItem('travelHistory');
-        if (!savedHistory || JSON.parse(savedHistory).length === 0) {
-            const historyList = document.getElementById('historyList');
-            historyList.innerHTML = '<div class="no-records">No travel records yet. Start your green travel journey!</div>';
-            return;
-        }
-        
-        const history = JSON.parse(savedHistory);
-        displayLocalHistory(history);
-    }
-    
-    // ----- 修改：Delete history record -----
-    /* 原始代码
-    function deleteRecord(recordId) {
-        const savedHistory = localStorage.getItem('travelHistory');
-        if (savedHistory) {
-            let history = JSON.parse(savedHistory);
-            history = history.filter(item => item.id !== recordId);
-            localStorage.setItem('travelHistory', JSON.stringify(history));
+        try {
+            const backendHistory = await getTripsFromBackend();
             
-            updateHistoryUI();
-            showAlert('Record deleted');
-        }
-    }
-    */
-    
-    // 新版删除记录功能
-    async function deleteRecord(recordId) {
-        // 尝试从后端删除
-        const backendDeleted = await deleteTripFromBackend(recordId).catch(err => false);
-        
-        // 无论后端是否成功，都从本地删除
-        const savedHistory = localStorage.getItem('travelHistory');
-        if (savedHistory) {
-            let history = JSON.parse(savedHistory);
-            history = history.filter(item => item.id !== recordId);
-            localStorage.setItem('travelHistory', JSON.stringify(history));
-            
-            // 如果后端删除失败但本地删除成功，仍更新UI
-            if (!backendDeleted) {
-                updateHistoryUI();
-                showAlert('Record deleted locally');
+            if (backendHistory && Array.isArray(backendHistory)) {
+                displayHistory(backendHistory);
             } else {
-                updateHistoryUI();
+                const historyList = document.getElementById('historyList');
+                historyList.innerHTML = '<div class="no-records">No travel records yet. Start your green travel journey!</div>';
             }
+        } catch (error) {
+            console.error('Error updating history UI:', error);
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '<div class="no-records">Unable to load history. Please try again later.</div>';
+            showAlert('Failed to load history');
         }
     }
+    
+
+    
+    //delete records UI
+    async function deleteRecord(recordId) {
+        try {
+            // 从后端删除
+            const backendDeleted = await deleteTripFromBackend(recordId);
+            
+            if (backendDeleted) {
+                updateHistoryUI();
+                showAlert('Record deleted successfully');
+            } else {
+                showAlert('Failed to delete record');
+            }
+        } catch (err) {
+            console.error('Error deleting record:', err);
+            showAlert('Connection error, please try again');
+        }
+    }
+    
+
+
+
+
     
     // Initialize app
     function initApp() {
@@ -928,7 +693,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(() => map.invalidateSize(), 100);
                 }
                 
-                // 如果切换到历史记录标签，重新加载历史数据
                 if (tabName === 'history') {
                     updateHistoryUI();
                 }
@@ -936,6 +700,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Initialize app
     initApp();
 });
