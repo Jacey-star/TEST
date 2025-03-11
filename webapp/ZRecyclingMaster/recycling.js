@@ -1,4 +1,4 @@
-// Enhanced Recycling Game JavaScript
+// Enhanced Recycling Game JavaScript with Backend Integration using Form Data
 
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
@@ -26,12 +26,63 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // User Data
     let userData = {
-        points: 30,
+        points: 0,
         scannedLocations: [],
         level: 1
     };
     
-
+    // API configuration
+    const API_BASE_URL = '/recycling';
+    const API_ENDPOINTS = {
+        SAVE_QR: '/save/',
+        SCAN_QR: '/scan/',
+        GET_USER_INFO: '/user/info/'
+    };
+    
+    // Fetch user data from the server using Form Data
+    async function fetchUserData() {
+        try {
+            const response = await fetch(API_BASE_URL + API_ENDPOINTS.GET_USER_INFO);
+            if (response.ok) {
+                // Parse response text into key-value pairs
+                const responseText = await response.text();
+                const userDataPairs = responseText.split('&');
+                const userData = {};
+                
+                userDataPairs.forEach(pair => {
+                    const [key, value] = pair.split('=');
+                    if (key === 'points') {
+                        userData.points = parseInt(value) || 0;
+                    } else if (key === 'level') {
+                        userData.level = parseInt(value) || 1;
+                    } else if (key === 'scannedLocations') {
+                        userData.scannedLocations = value ? value.split(',') : [];
+                    }
+                });
+                
+                // Update local user data
+                updateUserPoints(userData.points);
+            } else {
+                console.error('Failed to fetch user data:', await response.text());
+                // Default to initial values if API call fails
+                userData = {
+                    points: 0,
+                    scannedLocations: [],
+                    level: 1
+                };
+                updateUserPoints(userData.points);
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            // Default to initial values if API call fails
+            userData = {
+                points: 0,
+                scannedLocations: [],
+                level: 1
+            };
+            updateUserPoints(userData.points);
+        }
+    }
     
     // Switch to scan screen and start camera
     scanBtn.addEventListener('click', function() {
@@ -90,18 +141,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(function(error) {
                     console.error("Camera access failed: ", error);
-                    // Fallback to simulated scanning
-                    setTimeout(function() {
-                        showScanResult();
-                    }, 3000);
+                    // Show error to user
+                    showCameraError();
                 });
         } else {
             console.error("Browser doesn't support getUserMedia");
-            // Fallback to simulated scanning
-            setTimeout(function() {
-                showScanResult();
-            }, 3000);
+            // Show error to user
+            showCameraError();
         }
+    }
+    
+    // Show camera error message
+    function showCameraError() {
+        resultContent.className = 'result-content error';
+        resultContent.querySelector('.result-icon i').className = 'fas fa-camera-retro';
+        resultContent.querySelector('.result-title').textContent = 'Camera Error';
+        resultContent.querySelector('.result-message').textContent = 'Unable to access your camera. Please check permissions and try again.';
+        resultPrimaryBtn.textContent = 'Return Home';
+        resultSecondaryBtn.style.display = 'none';
+        
+        resultPrimaryBtn.onclick = function() {
+            resultOverlay.classList.remove('active');
+            scanScreen.classList.remove('active');
+            mainScreen.classList.remove('hidden');
+        };
+        
+        resultOverlay.classList.add('active');
     }
     
     // Stop the scanner
@@ -152,17 +217,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Stop scanning
                             stopScanner();
                             
-                            // Process QR code content
+                            // Process QR code content with backend
                             processQRCode(code.data);
                             return;
                         }
                     } else {
-                        // jsQR library not loaded, use simulated scanning
-                        if (Math.random() < 0.01) { // 1% chance to "detect" QR code
-                            stopScanner();
-                            showScanResult();
-                            return;
-                        }
+                        console.error("jsQR library not loaded");
                     }
                 } catch (error) {
                     console.error("QR code scanning error: ", error);
@@ -177,23 +237,58 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Process scanned QR code
-    function processQRCode(qrData) {
+    // Process scanned QR code with backend using Form Data
+    async function processQRCode(qrData) {
         console.log("Processing QR data: ", qrData);
         
-        // Here you can check if the QR code is a valid recycling bin QR code
-        
-        // Randomly simulate one of three results
-        const randomResult = Math.random();
-        if (randomResult < 0.6) {
-            // 60% chance of success
-            showSuccess();
-        } else if (randomResult < 0.8) {
-            // 20% chance of invalid QR
+        try {
+            // Create form data
+            const formData = new FormData();
+            formData.append('qrCode', qrData);
+            
+            const response = await fetch(API_BASE_URL + API_ENDPOINTS.SCAN_QR, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                console.error('Error from server:', response.status);
+                showInvalidQR();
+                return;
+            }
+            
+            // Parse response text
+            const responseText = await response.text();
+            const responseParts = responseText.split('&');
+            const result = {};
+            
+            // Parse response into key-value pairs
+            responseParts.forEach(part => {
+                const [key, value] = part.split('=');
+                result[key] = value;
+            });
+            
+            console.log("Scan result:", result);
+            
+            // Process different response statuses
+            if (result.status === 'success') {
+                // Update user points
+                userData.points = parseInt(result.points || 0);
+                const pointsEarned = parseInt(result.pointsEarned || 10);
+                updateUserPoints(userData.points);
+                showSuccess(pointsEarned);
+            } else if (result.status === 'already_scanned') {
+                showAlreadyCompleted();
+            } else if (result.status === 'invalid') {
+                showInvalidQR();
+            } else {
+                // Default to invalid for unknown responses
+                showInvalidQR();
+            }
+        } catch (error) {
+            console.error("Error processing QR code with backend:", error);
+            // Fallback to showing error if backend is unavailable
             showInvalidQR();
-        } else {
-            // 20% chance of already completed
-            showAlreadyCompleted();
         }
     }
     
@@ -249,17 +344,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Show success result
-    function showSuccess() {
+    function showSuccess(pointsEarned = 10) {
         resultContent.className = 'result-content success';
         resultContent.querySelector('.result-icon i').className = 'fas fa-check-circle';
         resultContent.querySelector('.result-title').textContent = 'Success!';
-        resultContent.querySelector('.result-message').textContent = 'You\'ve earned 10 points for recycling! Every bin helps save our planet.';
+        resultContent.querySelector('.result-message').textContent = `You've earned ${pointsEarned} points for recycling! Every bin helps save our planet.`;
         resultPrimaryBtn.textContent = 'Return Home';
         resultSecondaryBtn.style.display = 'none';
-        
-        // Update points (simulated)
-        userData.points += 10;
-        updateUserPoints(userData.points);
         
         // Create confetti effect
         createConfetti();
@@ -361,110 +452,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update user points display
     function updateUserPoints(points) {
         pointsDisplay.textContent = points + ' points';
+        // Add animation to points display to highlight changes
+        pointsDisplay.classList.add('points-updated');
+        setTimeout(() => {
+            pointsDisplay.classList.remove('points-updated');
+        }, 1000);
     }
     
-    // Simulate scan result (fallback method when actual camera not available)
-    function showScanResult() {
-        // Three different possible results
-        const results = [
-            {
-                type: 'success',
-                icon: 'fa-check-circle',
-                title: 'Success!',
-                message: 'You\'ve earned 10 points for recycling! Every bin helps save our planet.',
-                primaryBtn: 'Return Home',
-                showSecondary: false
-            },
-            {
-                type: 'error',
-                icon: 'fa-times-circle',
-                title: 'Invalid QR Code',
-                message: 'Please scan an official recycling bin QR code. This code was not recognized.',
-                primaryBtn: 'Try Again',
-                showSecondary: true,
-                secondaryBtn: 'Return Home'
-            },
-            {
-                type: 'warning',
-                icon: 'fa-exclamation-circle',
-                title: 'Already Scanned',
-                message: 'You\'ve already scanned this recycling bin today. Please find another bin or come back tomorrow!',
-                primaryBtn: 'Return Home',
-                showSecondary: false
-            }
-        ];
-        
-        // Randomly select a result
-        const result = results[Math.floor(Math.random() * results.length)];
-        
-        // Update result content
-        resultContent.className = 'result-content ' + result.type;
-        resultContent.querySelector('.result-icon i').className = 'fas ' + result.icon;
-        resultContent.querySelector('.result-title').textContent = result.title;
-        resultContent.querySelector('.result-message').textContent = result.message;
-        resultPrimaryBtn.textContent = result.primaryBtn;
-        
-        // Show/hide secondary button
-        if (result.showSecondary) {
-            resultSecondaryBtn.textContent = result.secondaryBtn;
-            resultSecondaryBtn.style.display = 'block';
-        } else {
-            resultSecondaryBtn.style.display = 'none';
-        }
-        
-        // Set button events
-        if (result.type === 'success') {
-            // Update points for success
-            userData.points += 10;
-            updateUserPoints(userData.points);
-            
-            // Add confetti effect
-            createConfetti();
-            
-            resultPrimaryBtn.onclick = function() {
-                resultOverlay.classList.remove('active');
-                scanScreen.classList.remove('active');
-                mainScreen.classList.remove('hidden');
-            };
-        } else if (result.type === 'warning') {
-            resultPrimaryBtn.onclick = function() {
-                resultOverlay.classList.remove('active');
-                scanScreen.classList.remove('active');
-                mainScreen.classList.remove('hidden');
-            };
-        } else {
-            resultPrimaryBtn.onclick = function() {
-                resultOverlay.classList.remove('active');
-                // Restart scanning
-                setTimeout(function() {
-                    showScanResult();
-                }, 1000);
-            };
-            
-            resultSecondaryBtn.onclick = function() {
-                resultOverlay.classList.remove('active');
-                scanScreen.classList.remove('active');
-                mainScreen.classList.remove('hidden');
-            };
-        }
-        
-        // Show result overlay
-        resultOverlay.classList.add('active');
-    }
-    
-    // Add animations to location buttons
-    function animateLocationButtons() {
-        locationBtns.forEach((btn, index) => {
-            setTimeout(() => {
-                btn.classList.add('animate-in');
-            }, 100 * index);
-        });
-    }
+    // 这里测试函数已删除
     
     // Initialize application
     function init() {
-        // Initialize user points
-        updateUserPoints(userData.points);
+        // Fetch user data from the server
+        fetchUserData();
         
         // Add responsive touches for better mobile experience
         document.body.addEventListener('touchstart', function() {
@@ -512,6 +512,10 @@ document.head.insertAdjacentHTML('beforeend', `
         
         .scan-btn.clicked {
             transform: scale(0.95);
+        }
+        
+        .points-updated {
+            animation: points-updated 0.8s ease;
         }
     </style>
 `);
