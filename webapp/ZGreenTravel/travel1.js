@@ -11,7 +11,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let isPaused = false;
     let sessionId = null;
     let wakeLock = null;
-    
+
+
+
+
+/******************* PART 1 : NEED TO CONNECT WITH THE BACKEND ************************/    
     // API 
     const API_BASE_URL = '/walkinggame';
     const API_ENDPOINTS = {
@@ -27,9 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
 
-    
-/******************* PART 1 : NEED TO CONNECT WITH THE BACKEND ************************/
-    
 
     /**
      * send walking data to backend
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
+
    //get history from backend
    async function getTripsFromBackend() {
         try {
@@ -115,6 +117,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+
+    
     /**
      * delete history
      * @param {string} tripId 
