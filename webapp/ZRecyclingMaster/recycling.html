@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Recycling Location Game</title>
+    <title>Recycling Master Game</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- <link rel="stylesheet" href="{% static 'css/recycling_game.css' %}"> -->
@@ -13,13 +13,14 @@
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </head>
 <body>
+
     <div class="container">
         <div class="game-container">
-            <!-- 主界面 -->
+            <!-- Main Screen -->
             <div class="main-screen" id="mainScreen">
                 <div class="header">
-                    <h1>Recycling Game</h1>
-                    <p>Scan recycling bins to earn points</p>
+                    <h1>Recycling Master</h1>
+                    <p>Scan bins to earn points and save the planet</p>
                     <div class="points-display">
                         <i class="fas fa-star"></i>
                         <span id="pointsDisplay">30 points</span>
@@ -27,20 +28,20 @@
                 </div>
 
                 <div class="locations-grid">
-                    <button class="location-btn" data-location="Amory" data-zipcode="94583">
-                        <i class="fas fa-recycle"></i>
-                        <span>Amory</span>
+                    <button class="location-btn" data-location="Amory Building" data-zipcode="EX4 4RJ" data-icon="fa-building">
+                        <i class="fas fa-building"></i>
+                        <span>Amory Buliding</span>
                     </button>
-                    <button class="location-btn" data-location="Forum" data-zipcode="75023">
-                        <i class="fas fa-recycle"></i>
+                    <button class="location-btn" data-location="Forum" data-zipcode="EX4 4PZ" data-icon="fa-university">
+                        <i class="fas fa-university"></i>
                         <span>Forum</span>
                     </button>
-                    <button class="location-btn" data-location="Harrison" data-zipcode="60614">
-                        <i class="fas fa-recycle"></i>
+                    <button class="location-btn" data-location="Harrison" data-zipcode="EX4 4QF" data-icon="fa-schoo">
+                        <i class="fas fa-school"></i>
                         <span>Harrison</span>
                     </button>
-                    <button class="location-btn" data-location="Sports Park" data-zipcode="33179">
-                        <i class="fas fa-recycle"></i>
+                    <button class="location-btn" data-location="Sports Park" data-zipcode="EX4 4QL" data-icon="fa-running">
+                        <i class="fas fa-running"></i>
                         <span>Sports Park</span>
                     </button>
                 </div>
@@ -53,19 +54,19 @@
                 </div>
             </div>
             
-            <!-- 扫描界面 -->
+            <!-- Scan Screen -->
             <div class="scan-screen" id="scanScreen">
                 <div class="scan-header">
                     <button class="back-btn" id="backBtn">
                         <i class="fas fa-arrow-left"></i>
                     </button>
-                    <h2>Scan QR Code</h2>
-                    <p>Point camera at recycling bin QR code</p>
+                    <h2>Scan Recycling Bin</h2>
+                    <p>Position QR code within the frame</p>
                 </div>
                 
                 <div class="scanner-container">
                     <div class="camera-view">
-                        <!-- 相机将在这里动态加载 -->
+                        <!-- Camera will be loaded here dynamically -->
                         <div class="scan-line"></div>
                         <div class="frame-corners">
                             <div class="corner top-left"></div>
@@ -77,12 +78,12 @@
                     
                     <div class="scan-status">
                         <div class="loading-spinner"></div>
-                        <p>Scanning...</p>
+                        <p>Scanning for recycling bin...</p>
                     </div>
                 </div>
             </div>
             
-            <!-- 结果覆盖层 -->
+            <!-- Result Overlay -->
             <div class="result-overlay" id="resultOverlay">
                 <div class="result-content" id="resultContent">
                     <div class="result-icon">
@@ -91,14 +92,14 @@
                     <h3 class="result-title">Success!</h3>
                     <p class="result-message">You've earned 10 points for recycling!</p>
                     <div class="result-actions">
-                        <button class="btn primary-btn" id="resultPrimaryBtn">Return</button>
-                        <button class="btn secondary-btn" id="resultSecondaryBtn">Try Again</button>
+                        <button class="btn primary-btn" id="resultPrimaryBtn">Return Home</button>
+                        <button class="btn secondary-btn" id="resultSecondaryBtn">Scan Again</button>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- 位置详情弹窗 -->
+        <!-- Location Details Modal -->
         <div class="modal" id="locationModal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -111,15 +112,15 @@
                     <div class="location-detail">
                         <i class="fas fa-map-pin"></i>
                         <div class="detail-text">
-                            <strong>Zipcode</strong>
+                            <strong>Postcode</strong>
                             <span id="zipcodeValue">12345</span>
                         </div>
                     </div>
                     <div class="location-detail">
-                        <i class="fas fa-info-circle"></i>
+                        <i class="fas fa-clock"></i>
                         <div class="detail-text">
-                            <strong>Status</strong>
-                            <span>Available for scanning</span>
+                            <strong>Hours</strong>
+                            <span>Open 24/7</span>
                         </div>
                     </div>
                 </div>
@@ -130,9 +131,6 @@
             </div>
         </div>
     </div>
-
-    <!-- <script src="{% static 'js/recycling_game.js' %}"></script> --> 
     <script src="recycling.js"></script>
 </body>
 </html>
-
