@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // User Data
     let userData = {
         points: 0,
-        scannedLocations: [],
+        lastScanDate: '',
     };
     
     // ********************* PART1  Backend Connection *******************
@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     // Fetch user data from the server
+    // 获取用户数据
     async function fetchUserData() {
         try {
             const response = await fetch(API_BASE_URL + API_ENDPOINTS.GET_USER_INFO);
@@ -47,8 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     const [key, value] = pair.split('=');
                     if (key === 'points') {
                         userData.points = parseInt(value) || 0;
-                    } else if (key === 'scannedLocations') {
-                        userData.scannedLocations = value ? value.split(',') : [];
+                    } else if (key === 'lastScanDate') {
+                        userData.lastScanDate = value || '';
                     }
                 });
                 
@@ -59,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Default to initial values if API call fails
                 userData = {
                     points: 0,
-                    scannedLocations: [],
+                    lastScanDate: '',
                 };
                 updateUserPoints(userData.points);
             }
@@ -67,12 +68,12 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error fetching user data:', error);
             userData = {
                 points: 0,
-                scannedLocations: [],
+                lastScanDate: '',
             };
             updateUserPoints(userData.points);
         }
     }
-    
+
     // Process scanned QR code with backend
     async function processQRCode(qrData) {
         console.log("Processing QR data: ", qrData);
@@ -106,11 +107,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (result.status === 'success') {
                 // Update user points
                 userData.points = parseInt(result.points || 0);
+                userData.lastScanDate = result.lastScanDate || '';
                 const pointsEarned = parseInt(result.pointsEarned || 10);
                 updateUserPoints(userData.points);
                 showSuccess(pointsEarned);
-            } else if (result.status === 'already_scanned') {
-                showAlreadyCompleted();
+            } else if (result.status === 'already_scanned_today') {
+                showAlreadyCompleted(); // Using the existing function with updated content
             } else if (result.status === 'invalid') {
                 showInvalidQR();
             } else {
@@ -121,7 +123,6 @@ document.addEventListener('DOMContentLoaded', function() {
             showInvalidQR();
         }
     }
-    
     // *************** Camera and QR Code Scanning Part ********************
     
     // Camera Variables
@@ -359,11 +360,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Show already completed task result
+    // 显示已完成任务结果 (修改为每日限制)
     function showAlreadyCompleted() {
         resultContent.className = 'result-content warning';
         resultContent.querySelector('.result-icon i').className = 'fas fa-exclamation-circle';
-        resultContent.querySelector('.result-title').textContent = 'Already Scanned';
-        resultContent.querySelector('.result-message').textContent = 'You\'ve already scanned this recycling bin today. Please find another bin or come back tomorrow!';
+        resultContent.querySelector('.result-title').textContent = 'Already Scanned Today';
+        resultContent.querySelector('.result-message').textContent = 'You have already earned points today. Come back tomorrow!';
         resultPrimaryBtn.textContent = 'Return Home';
         resultSecondaryBtn.style.display = 'none';
         
