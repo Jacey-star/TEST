@@ -1,0 +1,274 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+.exit-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    text-decoration: none;
+    color: #333;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.exit-btn:hover {
+    background: #f0f0f0;
+}
+.leaderboard {
+    height: 90vh;
+    max-width: 1000px;
+    min-width: 300px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+/* 前三名容器：底部对齐，统一水平线 */
+.top-three {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* 底部对齐 */
+    margin-bottom: 20px;
+    position: relative;
+    height: 200px; /* 根据最高领奖台（第一名）的高度预留空间 */
+}
+
+/* 公共的前三名外框样式 */
+.rank {
+    width: 110px;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    font-weight: bold;
+    color: white;
+    position: relative;
+    padding-top: 40px; /* 为头像预留空间 */
+    margin: 0 10px;
+}
+
+/* 利用 order 属性确保排列：第二名在左、第一名在中、第三名在右 */
+/* 第二名：背景银色，高度 130px */
+.rank-2 {
+    order: 1;
+    background: rgb(192, 192, 192);
+    height: 130px;
+}
+
+/* 第一名：背景金色，高度 150px */
+.rank-1 {
+    order: 2;
+    background: gold;
+    height: 150px;
+}
+
+/* 第三名：背景铜色，高度 110px */
+.rank-3 {
+    order: 3;
+    background: #ffbe7c;
+    height: 110px;
+}
+
+/* 头像容器：悬浮在框的上方 */
+.avatar-container {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 前三名头像样式 */
+.top-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+
+/* 底部信息：固定在框的底部 */
+.rank-info {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+.rank-info .score{
+    color: #ff4d4f;
+}
+.top-three .rank-info {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+/* 第一名 */
+#rank1 .rank-info {
+    position: absolute;
+    top: calc(25px + 15px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+/* 第二名 */
+#rank2 .rank-info {
+    position: absolute;
+    top: calc(25px + 15px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+/* 第三名 */
+#rank3 .rank-info {
+    position: absolute;
+    top: calc(25px + 15px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+/* 仅在前三名中显示炫酷特效字体 */
+.top-three .rank-number {
+    font-family: 'Black Ops One', cursive;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+/* 以下为其余部分，保持原有样式 */
+.scroll-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.list li {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 15px 10px; /* 上下15px，左右10px */
+    border-bottom: 1px solid #ddd;
+    font-size: 1.2vw;
+    background: #ffffff;
+    gap: 10px;
+}
+.rank-number {
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
+}
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.list .name {
+    flex-grow: 1;
+    text-align: left;
+}
+.list .score {
+    font-weight: bold;
+    color: #ff4d4f;
+}
+.self-rank {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    background: #c8c8c8;
+    border-top: 1px solid #ddd;
+    padding: 15px 10px;
+}
+.self-rank > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2vw;
+}
+.self-rank .name {
+    flex: 1;
+    text-align: left;
+}
+/* 积分部分右对齐 */
+.self-rank > div .score {
+    font-weight: bold;
+    color: #ff4d4f;
+    transform: translateX(-10px);
+}
+
+
+
+/* 自适应 */
+@media (max-width: 600px) {
+    /* 调整整体字体大小 */
+    body {
+        font-size: 16px;
+    }
+
+    /* 调整标题 */
+    h2 {
+        font-size: 1.8em;        /* 适当调整字体大小 */
+        line-height: 2;        /* 增加行高，避免文字被挤压 */
+        margin-top: 10px;        /* 如果标题被顶部其他内容遮挡，可以适当增加上边距 */
+        margin-bottom: 15px;
+        overflow: visible;       /* 保证内容完整显示 */
+        white-space: normal;     /* 允许标题自动换行 */
+    }
+
+    /* 前三名容器高度适当减少 */
+    .top-three {
+        height: 180px;
+    }
+
+    /* 调整前三名外框宽度与高度 */
+    .rank {
+        width: 90px;
+        padding-top: 35px;
+        margin: 0 5px;
+    }
+    .rank-1 {
+        height: 140px;
+    }
+    .rank-2 {
+        height: 120px;
+    }
+    .rank-3 {
+        height: 100px;
+    }
+
+    /* 头像尺寸也可以适当减小 */
+    .top-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* 前三名中的 TOP 标签字体 */
+    .top-three .rank-number {
+        font-size: 20px;
+    }
+
+    /* 滑动排行榜列表中的字体与内边距 */
+    .list li {
+        font-size: 16px;
+        padding: 10px 8px;
+    }
+
+    /* 我的排名区域的字体 */
+    .self-rank > div {
+        font-size: 16px;
+    }
+}
