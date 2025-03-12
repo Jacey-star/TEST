@@ -28,13 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // API Configuration
     const API_BASE_URL = '/recycling';
     const API_ENDPOINTS = {
-        SAVE_QR: '/save/',
         SCAN_QR: '/scan/',
         GET_USER_INFO: '/user/info/'
     };
     
     // Fetch user data from the server
-    // 获取用户数据
     async function fetchUserData() {
         try {
             const response = await fetch(API_BASE_URL + API_ENDPOINTS.GET_USER_INFO);
@@ -123,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showInvalidQR();
         }
     }
-    // *************** Camera and QR Code Scanning Part ********************
+    // *************** PART2 Camera and QR Code Scanning  ********************
     
     // Camera Variables
     let videoElement;
