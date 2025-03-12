@@ -1,3 +1,7 @@
+function goBack() {
+    window.history.back();
+}
+
 const API_URL = "http://localhost:5000/api/rankings"; // 后端 API 地址
 let selfUsername = "ABCD"; // 你的用户名
 
@@ -49,19 +53,19 @@ function updateTopThree(users) {
     // 第一名更新
     rank1.querySelector(".rank-number").textContent = "TOP1";
     rank1.querySelector(".name").textContent = topThree[0].name;
-    rank1.querySelector(".score").textContent = "SCORE: " + topThree[0].score;
+    rank1.querySelector(".score").textContent = "" + topThree[0].score;
     rank1.querySelector("img").src = topThree[0].avatar;
 
     // 第二名更新
     rank2.querySelector(".rank-number").textContent = "TOP2";
     rank2.querySelector(".name").textContent = topThree[1].name;
-    rank2.querySelector(".score").textContent = "SCORE: " + topThree[1].score;
+    rank2.querySelector(".score").textContent = "" + topThree[1].score;
     rank2.querySelector("img").src = topThree[1].avatar;
 
     // 第三名更新
     rank3.querySelector(".rank-number").textContent = "TOP3";
     rank3.querySelector(".name").textContent = topThree[2].name;
-    rank3.querySelector(".score").textContent = "SCORE: " + topThree[2].score;
+    rank3.querySelector(".score").textContent = "" + topThree[2].score;
     rank3.querySelector("img").src = topThree[2].avatar;
 }
 
@@ -101,7 +105,7 @@ function renderLeaderboard(users) {
             <span class="rank-number">${rank}</span>
             <img src="${user.avatar}" alt="${user.name}" class="avatar">
             <span class="name">${user.name}</span>
-            <span class="score">SCORE: ${user.score}</span>
+            <span class="score">${user.score}</span>
         `;
         rankingList.appendChild(li);
 
@@ -118,7 +122,7 @@ function renderLeaderboard(users) {
                 <span class="rank-number">${selfRank.rank}</span>
                 <img src="${selfRank.avatar}" alt="${selfRank.name}" class="avatar">
                 <span class="name">${selfRank.name}</span>
-                <span class="score">SCORE: ${selfRank.score}</span>
+                <span class="score">${selfRank.score}</span>
             </div>
         `;
     } else {

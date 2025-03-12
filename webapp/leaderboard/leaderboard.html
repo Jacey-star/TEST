@@ -11,11 +11,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rubik+Wet+Paint&display=swap" rel="stylesheet">
 </head>
 <body>
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">
+            <i class="fa fa-arrow-left"></i> BACK
+            </button>
+            <h1>Leaderboard</h1>
+    </header>
     <div class="leaderboard">
-        <a href="javascript:history.back()" class="exit-btn">
-            <i class="fa fa-arrow-left" aria-hidden="true"></i> EXIT
-          </a>
-        <h2>leaderboard</h2>
         <!-- 前三名展示 -->
         <div class="top-three" id="topThree">
             <!-- 第二名（左边） -->
