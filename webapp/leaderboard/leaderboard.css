@@ -1,46 +1,61 @@
+/* Modern Font & Base Styling */
 body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(0deg, #b0eb8d, #ffffff);
+    font-family: 'Poppins', Arial, sans-serif;
+    background: linear-gradient(135deg, #2D6A4F, #40916C, #95D5B2);
+    background-size: 600% 600%;
+    animation: gradientBG 20s ease infinite;
     text-align: center;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
 }
-.exit-btn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 20px;
-    text-decoration: none;
-    color: #333;
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background: #fff;
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-.exit-btn:hover {
-    background: #f0f0f0;
-}
-.leaderboard {
-    height: 83vh;
-    max-width: 1000px;
-    min-width: 300px;
-    margin: 20px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(0deg, #b0eb8d, #f6fcf3);
-}
-
+/* Header Styling */
 .header {
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #ffffff88;
-    padding: 0.5rem 1rem;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    background-color: rgba(45, 106, 79, 0.9);
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border-radius: 0 0 15px 15px;
+    overflow: hidden;
 }
+
+.header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #FFD700, #74C69D, #1B4332);
+}
+
+.header h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.header h1::after {
+    content: "★";
+    font-size: 1rem;
+    color: #FFD700;
+    margin-left: 8px;
+    vertical-align: super;
+}
+
 .back-btn {
     position: absolute;
     left: 1rem;
@@ -48,33 +63,84 @@ body {
     border: none;
     font-size: 1rem;
     cursor: pointer;
-    color: #333;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
-.back-btn:hover {
-    opacity: 0.8;
+
+.back-btn {
+    position: absolute;
+    left: 1rem;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #ffffff;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
-.header h1 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #333;
+
+/* Leaderboard Structure */
+.leaderboard {
+    height: auto; /* Changed from fixed height to auto */
+    min-height: 80vh;
+    max-height: 90vh;
+    max-width: 1000px;
+    min-width: 300px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 
+                inset 0 0 20px rgba(255, 255, 255, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
 }
-.score::before {
-    content: "\f005 "; /* Font Awesome 的星星图标代码 */
-    font-family: "FontAwesome";
-    color: #ffd700; /* 金黄色 */
-    margin-right: 5px;
+
+.leaderboard::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(135deg, rgba(149, 213, 178, 0.2), rgba(149, 213, 178, 0.05));
+    border-radius: 50%;
+    z-index: -1;
 }
-/* 前三名容器：底部对齐，统一水平线 */
+
+.leaderboard::after {
+    content: '';
+    position: absolute;
+    bottom: -70px;
+    right: -70px;
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(27, 67, 50, 0.2), rgba(27, 67, 50, 0.05));
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* Top 3 Podium Section */
 .top-three {
     display: flex;
     justify-content: center;
-    align-items: flex-end; /* 底部对齐 */
-    margin-bottom: 10px;
+    align-items: flex-end;
+    margin-bottom: 30px;
     position: relative;
-    height: 200px; /* 根据最高领奖台（第一名）的高度预留空间 */
+    height: 250px; /* Increased height to provide more space */
+    padding-top: 30px; /* Added padding to ensure avatar is not cut off */
 }
 
-/* 公共的前三名外框样式 */
+/* Common Rank Styling */
 .rank {
     width: 110px;
     border-radius: 15px 15px 0 0;
@@ -85,120 +151,350 @@ body {
     font-weight: bold;
     color: white;
     position: relative;
-    padding-top: 40px; /* 为头像预留空间 */
-    margin: 0 10px;
+    padding-top: 40px;
+    margin: 0 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* 利用 order 属性确保排列：第二名在左、第一名在中、第三名在右 */
-/* 第一名 */
+/* Removed hover effect */
+
+/* First Place */
 .rank-1 {
     order: 2;
-    background: linear-gradient(135deg, rgb(255,42,42), #feffde);
-    height: 150px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.25), inset 0 1px 3px rgba(255,255,255,0.2);
+    background: linear-gradient(135deg, #D4AF37, #FFD700);
+    height: 180px;
+    z-index: 3;
+    position: relative;
+}
+.rank-1::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3) 10px, rgba(255, 255, 255, 0) 10px, rgba(255, 255, 255, 0) 20px);
+    border-radius: 15px 15px 0 0;
 }
 
-/* 第二名 */
+/* Second Place */
 .rank-2 {
     order: 1;
-    background: linear-gradient(135deg, #6f6f6f, #ffffff);
-    height: 130px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.25), inset 0 1px 3px rgba(255,255,255,0.2);
+    background: linear-gradient(135deg, #74C69D, #B7E4C7);
+    height: 150px;
+    z-index: 2;
+    position: relative;
+}
+.rank-2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3) 10px, rgba(255, 255, 255, 0) 10px, rgba(255, 255, 255, 0) 20px);
+    border-radius: 15px 15px 0 0;
 }
 
-/* 第三名 */
+/* Third Place */
 .rank-3 {
     order: 3;
-    background: linear-gradient(135deg, #b25900, #f0f0d7);
-    height: 110px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.25), inset 0 1px 3px rgba(255,255,255,0.2);
+    background: linear-gradient(135deg, #40916C, #52B788);
+    height: 120px;
+    z-index: 1;
+    position: relative;
+}
+.rank-3::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3) 10px, rgba(255, 255, 255, 0) 10px, rgba(255, 255, 255, 0) 20px);
+    border-radius: 15px 15px 0 0;
 }
 
-/* 头像容器：悬浮在框的上方 */
+/* Avatar Container & Crown */
 .avatar-container {
     position: absolute;
-    top: -25px;
+    top: -35px; /* Moved up to ensure visibility */
     left: 50%;
     transform: translateX(-50%);
+    z-index: 5; /* Ensure it's above other elements */
 }
 .rank .avatar-container::after {
     content: "";
     position: absolute;
-    top: -30px;
+    top: -35px; /* Moved up to prevent cropping */
     left: 80%;
     transform: translateX(-50%);
     width: 70px;
     height: 70px;
-    background-image: url('../pictures/crown.png'); /* 替换为你的皇冠图片路径 */
+    background-image: url('../pictures/crown.png');
     background-size: contain;
     background-repeat: no-repeat;
+    filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2));
+    transition: all 0.3s ease;
+}
+.rank-1 .avatar-container::after {
+    transform: translateX(-50%) scale(1.2);
+    animation: crownGlow 2s infinite alternate;
+}
+@keyframes crownGlow {
+    0% {
+        filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2));
+    }
+    100% {
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
+    }
 }
 
-/* 前三名头像样式 */
+/* Profile Images */
 .top-avatar {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     border: 3px solid white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
 }
 
-/* 底部信息：固定在框的底部 */
+/* Rank Info Styling */
 .rank-info {
     position: absolute;
-    bottom: 5px;
+    bottom: 10px;
     left: 0;
     right: 0;
     font-size: 14px;
     font-weight: bold;
-}
-.rank-info .score{
-    color: #ff4d4f;
-}
-.top-three .rank-info {
     text-align: center;
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
-.top-three .rank-info .score {
-    margin-top: 8px; /* 根据需要调整值 */
+.rank-info .name {
+    font-size: 14px;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0 auto;
 }
-/* 第一名 */
-#rank1 .rank-info {
-    position: absolute;
-    top: calc(25px + 15px);
-    left: 50%;
-    transform: translateX(-50%);
+.rank-info .score {
+    color: #ffffff;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 5px;
 }
-/* 第二名 */
-#rank2 .rank-info {
-    position: absolute;
-    top: calc(25px + 15px);
-    left: 50%;
-    transform: translateX(-50%);
+.sparkle {
+    display: inline-block;
+    animation: sparkleEffect 1.5s infinite alternate;
+    font-size: 16px;
+    margin-left: 3px;
 }
-/* 第三名 */
-#rank3 .rank-info {
-    position: absolute;
-    top: calc(25px + 15px);
-    left: 50%;
-    transform: translateX(-50%);
+@keyframes sparkleEffect {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1.4);
+        opacity: 1;
+    }
 }
-/* 仅在前三名中显示炫酷特效字体 */
-.top-three .rank-number {
-    font-family: 'Black Ops One', cursive;
-    font-size: 30px;
-    font-weight: 1000;
-    margin-top: -5px;
+.score::before {
+    content: "\f005";
+    font-family: "FontAwesome";
+    color: #FFD700;
+    margin-right: 5px;
+    font-size: 14px;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
-/* 以下为其余部分，保持原有样式 */
+/* tied user avatar */
+.tied-count-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid white;
+    background-color: #40916C; /* 纯色背景 - 使用环保主题的绿色 */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+/* tied user - click*/
+.rank[style*="cursor: pointer"]:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+}
+
+.rank[style*="cursor: pointer"]::after {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.rank[style*="cursor: pointer"]:hover::after {
+    opacity: 1;
+}
+
+
+
+
+.tied-users-modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-content {
+    background-color: white;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #777;
+}
+.tied-users-list {
+    margin-top: 15px;
+}
+.tied-user-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+.tied-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+.tied-user-name {
+    flex: 1;
+    font-weight: 500;
+}
+.tied-user-score {
+    font-weight: bold;
+    color: #2D6A4F;
+}
+.tied-user-item.is-self {
+    background-color: rgba(45, 106, 79, 0.1);
+    border-left: 3px solid #2D6A4F;
+}
+
+
+
+
+/* 模态框中五角星图标样式 */
+.star-icon {
+    color: #FFD700; /* 黄金色 */
+    margin-right: 5px;
+    font-size: 14px;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 增强用户得分样式 */
+.tied-user-score {
+    font-weight: bold;
+    color: #2D6A4F;
+    display: flex;
+    align-items: center;
+}
+
+/* 为模态框标题添加星星装饰 */
+.modal-content h3 {
+    position: relative;
+    display: inline-block;
+}
+
+.modal-content h3::before,
+.modal-content h3::after {
+    content: "\f005"; /* FontAwesome 星星图标 */
+    font-family: "FontAwesome";
+    color: #FFD700;
+    margin: 0 10px;
+    font-size: 14px;
+}
+
+.modal-content h3 {
+    margin-top: 5px;
+    color: #2D6A4F;
+    border-bottom: 2px solid #95D5B2;
+    padding-bottom: 10px;
+    text-align: center;
+}
+.rank-1 .tied-count-avatar {
+    background-color: #D4AF37;
+}
+.rank-2 .tied-count-avatar {
+    background-color: #74C69D;
+}
+.rank-3 .tied-count-avatar {
+    background-color: #52B788;
+}
+
+/* TOP Ranking Numbers */
+.top-three .rank-number {
+    font-family: 'Black Ops One', cursive;
+    font-size: 28px;
+    color: #FFFFFF;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+/* Scrollable List */
 .scroll-container {
     flex-grow: 1;
     overflow-y: auto;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 5px;
+    margin: 10px 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(64, 145, 108, 0.5) transparent;
+    max-height: calc(40vh - 20px); /* Limit height to ensure self-rank visibility */
+}
+.scroll-container::-webkit-scrollbar {
+    width: 6px;
+}
+.scroll-container::-webkit-scrollbar-thumb {
+    background-color: rgba(64, 145, 108, 0.5);
+    border-radius: 10px;
 }
 .list {
     list-style: none;
@@ -209,131 +505,199 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 15px 10px; /* 上下15px，左右10px */
-    border-bottom: 1px solid #ddd;
-    font-size: 1.2vw;
-    background: #ffffff8f;
-    gap: 10px;
+    padding: 12px 15px;
+    margin: 8px 0;
+    border-radius: 10px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.8);
+    gap: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid transparent;
+    position: relative;
 }
+
+/* Removed list item hover effect */
+.list li:nth-child(4n+1) {
+    border-left: 4px solid rgba(64, 145, 108, 0.7);
+}
+.list li:nth-child(4n+2) {
+    border-left: 4px solid rgba(116, 171, 198, 0.7);
+}
+.list li:nth-child(4n+3) {
+    border-left: 4px solid rgba(191, 183, 228, 0.7);
+}
+.list li:nth-child(4n+4) {
+    border-left: 4px solid rgba(235, 187, 204, 0.7);
+}
+
+/* Removed hover light effect */
 .rank-number {
     font-weight: bold;
     min-width: 30px;
     text-align: center;
+    color: #2D6A4F;
 }
 .avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f0f0f0;
 }
 .list .name {
     flex-grow: 1;
     text-align: left;
+    font-weight: 500;
+    color: #3a3a3a;
 }
 .list .score {
     font-weight: bold;
-    color: #ff4d4f;
+    color: #2D6A4F;
+    display: flex;
+    align-items: center;
 }
+
+/* Self Rank (Bottom Fixed) */
 .self-rank {
     position: sticky;
     bottom: 0;
     width: 98%;
-    /* background: linear-gradient(135deg, rgb(188, 220, 144), #feffec); */
-    background-color: #b8d6a7;
-    border-top: 1px solid #ddd;
-    padding: 20px 10px;
-    border-radius: 10px 10px 0 0;
-    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2); 
-    font-size: 1.4vw;
+    background: linear-gradient(135deg, #2D6A4F, #40916C);
+    padding: 15px;
+    border-radius: 15px 15px 0 0;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    /* Ensure there is enough bottom margin */
+    margin-bottom: 5px;
+}
+.self-rank::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #FFD700, transparent);
+}
+.self-rank::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: rgba(0, 0, 0, 0.2);
 }
 .self-rank > div {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 1.2vw;
+    gap: 15px;
+    font-size: 16px;
 }
 .self-rank .name {
     flex: 1;
     text-align: left;
+    font-weight: 500;
 }
-/* 积分部分右对齐 */
 .self-rank > div .score {
     font-weight: bold;
-    color: #ff4d4f;
-    transform: translateX(-15px);
+    color: #ffffff;
+}
+.self-rank > div .rank-number {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 50%;
+    min-width: unset;
 }
 
 
 
-/* 自适应 */
+
+
+
+/* Responsive Adjustments */
 @media (max-width: 600px) {
-    /* 调整整体字体大小 */
     body {
-        font-size: 16px;
+        font-size: 14px;
     }
 
-    /* 调整标题 */
-    h2 {
-        font-size: 1.8em;        /* 适当调整字体大小 */
-        line-height: 2;        /* 增加行高，避免文字被挤压 */
-        margin-top: 10px;        /* 如果标题被顶部其他内容遮挡，可以适当增加上边距 */
-        margin-bottom: 15px;
-        overflow: visible;       /* 保证内容完整显示 */
-        white-space: normal;     /* 允许标题自动换行 */
+    .header h1 {
+        font-size: 1.2rem;
     }
 
-    /* 前三名容器高度适当减少 */
+    /* Top podium section */
     .top-three {
-        height: 180px;
+        height: 220px;
+        padding-top: 40px;
     }
 
-    /* 调整前三名外框宽度与高度 */
     .rank {
         width: 90px;
         padding-top: 35px;
-        margin: 0 5px;
+        margin: 0 8px;
     }
     .rank-1 {
-        height: 140px;
+        height: 160px; 
     }
     .rank-2 {
-        height: 120px;
+        height: 130px;
     }
     .rank-3 {
-        height: 100px;
+        height: 110px;
     }
-    /* 头像框 */
+
+    .avatar-container {
+        top: -40px;
+    }
     .rank .avatar-container::after {
         width: 50px;
         height: 50px;
-        top: -23px; /* 根据需要微调 */
-        left: 80%;  /* 根据头像位置微调 */
+        top: -25px;
+    }
+    .top-avatar {
+        width: 45px;
+        height: 45px;
     }
 
-    /* 头像尺寸也可以适当减小 */
-    .top-avatar {
-        width: 40px;
-        height: 40px;
-    }
-    
-    /* 前三名中的 TOP 标签字体 */
     .top-three .rank-number {
         font-size: 20px;
     }
-
-    /* 滑动排行榜列表中的字体与内边距 */
+    .modal-content {
+        width: 90%;
+        padding: 15px;
+    }
+    
+    .tied-user-item {
+        padding: 8px;
+    }
+    
+    .tied-user-avatar {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+    }
     .list li {
-        font-size: 16px;
-        padding: 10px 8px;
+        font-size: 14px;
+        padding: 10px;
     }
 
-    /* 我的排名区域的字体 */
     .self-rank > div {
-        font-size: 16px;
+        font-size: 14px;
     }
+
     .self-rank {
         width: 95%;
+        padding: 12px 10px;
     }
-    .self-rank > div .score {
-        transform: translateX(1px);
+    
+    .leaderboard {
+        height: auto;
+        min-height: 85vh;
+        margin: 15px auto;
+        padding: 15px;
     }
 }

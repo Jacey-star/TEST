@@ -3,66 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>leaderboard</title>
+    <title>Leaderboard</title>
     <link rel="stylesheet" href="leaderboard.css">
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rubik+Wet+Paint&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="header">
         <button class="back-btn" onclick="goBack()">
             <i class="fa fa-arrow-left"></i> BACK
-            </button>
-            <h1>Leaderboard</h1>
+        </button>
+        <h1>LEADERBOARD</h1>
     </header>
     <div class="leaderboard">
-        <!-- 前三名展示 -->
+        <!-- Top 3 Winners Podium -->
         <div class="top-three" id="topThree">
-            <!-- 第二名（左边） -->
+            <!-- Second Place (Left) -->
             <div id="rank2" class="rank rank-2">
                 <div class="avatar-container">
                     <img class="top-avatar" src="../pictures/bird.jpg" alt="No.2">
                 </div>
                 <div class="rank-info">
-                    <span class="rank-number">TOP2</span>
+                    <span class="rank-number">TOP 2</span>
                     <span class="name">Loading...</span>
-                    <span class="score">SCORE: Loading...</span>
+                    <span class="score">Loading...</span>
                 </div>
             </div>
-            <!-- 第一名（中间） -->
+            <!-- First Place (Center) -->
             <div id="rank1" class="rank rank-1">
                 <div class="avatar-container">
                     <img class="top-avatar" src="../pictures/bird.jpg" alt="No.1">
                 </div>
                 <div class="rank-info">
-                    <span class="rank-number">TOP1</span>
+                    <span class="rank-number">TOP 1</span>
                     <span class="name">Loading...</span>
-                    <span class="score">SCORE: Loading...</span>
+                    <span class="score">Loading...</span>
                 </div>
             </div>
-            <!-- 第三名（右侧） -->
+            <!-- Third Place (Right) -->
             <div id="rank3" class="rank rank-3">
                 <div class="avatar-container">
                     <img class="top-avatar" src="../pictures/bird.jpg" alt="No.3">
                 </div>
                 <div class="rank-info">
-                    <span class="rank-number">TOP3</span>
+                    <span class="rank-number">TOP 3</span>
                     <span class="name">Loading...</span>
-                    <span class="score">SCORE: Loading...</span>
+                    <span class="score">Loading...</span>
                 </div>
             </div>
         </div>
-        <!-- 其他用户（可滚动） -->
+        <!-- Scrollable Rankings -->
         <div class="scroll-container">
             <ul class="list" id="rankingList">
-                <li>Loading...</li>
+                <li>
+                    <span class="rank-number">-</span>
+                    <img src="../pictures/bird.jpg" alt="player" class="avatar">
+                    <span class="name">Loading...</span>
+                    <span class="score">-</span>
+                </li>
             </ul>
         </div>
-        <!-- 始终固定在底部的“我的排名” -->
+        <!-- Current User Fixed at Bottom -->
         <div class="self-rank" id="selfRank">
-            <p>Loading...</p>
+            <p>Loading your rank...</p>
         </div>
     </div>
     <script src="leaderboard.js"></script>
